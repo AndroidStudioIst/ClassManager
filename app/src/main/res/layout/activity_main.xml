@@ -2,8 +2,91 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@mipmap/bg">
 
+    <com.angcyo.uiview.viewgroup.DriftLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            style="@style/BaseMainTextStyle"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:background="@drawable/base_white_circle_shape"
+            android:gravity="center"
+            android:text="首页"
+            app:r_is_drift_center="true"/>
+
+        <TextView
+            style="@style/BaseMainTextStyle"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:background="@drawable/base_white_circle_shape"
+            android:gravity="center"
+            android:text="按钮1"
+            app:r_drift_angle_step="1"
+            app:r_drift_angle="30"
+            app:r_drift_r_offset="80dp"/>
+
+        <TextView
+            style="@style/BaseMainTextStyle"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:background="@drawable/base_white_circle_shape"
+            android:gravity="center"
+            android:text="按钮2"
+            app:r_drift_angle="90"
+            app:r_drift_r_offset="60dp"/>
+
+        <TextView
+            style="@style/BaseMainTextStyle"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:background="@drawable/base_white_circle_shape"
+            android:gravity="center"
+            android:text="按钮3"
+            app:r_drift_angle="145"
+            app:r_drift_r_offset="100dp"/>
+
+        <TextView
+            style="@style/BaseMainTextStyle"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:background="@drawable/base_white_circle_shape"
+            android:gravity="center"
+            android:text="按钮4"
+            app:r_drift_angle="180"
+            app:r_drift_angle_step="0.05"
+            app:r_drift_r_offset="80dp"/>
+
+        <TextView
+            style="@style/BaseMainTextStyle"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:background="@drawable/base_white_circle_shape"
+            android:gravity="center"
+            android:text="按钮5"
+            app:r_drift_angle="270"
+            app:r_drift_r_offset="40dp"/>
+
+        <TextView
+            style="@style/BaseMainTextStyle"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:background="@drawable/base_white_circle_shape"
+            android:gravity="center"
+            android:text="按钮6"
+            app:r_drift_angle="350"
+            app:r_drift_r_offset="80dp"/>
+
+    </com.angcyo.uiview.viewgroup.DriftLayout>
 </FrameLayout>

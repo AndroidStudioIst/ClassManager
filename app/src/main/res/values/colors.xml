@@ -3,4 +3,8 @@
     <color name="colorPrimary">#fafa27</color>
     <color name="colorPrimaryDark">#929205</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="theme_color_primary">#fafa27</color>
+    <color name="theme_color_primary_dark">#929205</color>
+    <color name="theme_color_accent">#FF4081</color>
 </resources>
