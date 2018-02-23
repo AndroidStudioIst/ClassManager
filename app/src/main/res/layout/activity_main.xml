@@ -21,6 +21,7 @@
             app:r_is_drift_center="true"/>
 
         <TextView
+            android:id="@+id/add_teacher"
             style="@style/BaseMainTextStyle"
             android:layout_width="80dp"
             android:layout_height="80dp"
@@ -28,8 +29,8 @@
             android:background="@drawable/base_white_circle_shape"
             android:gravity="center"
             android:text="按钮1"
-            app:r_drift_angle_step="1"
             app:r_drift_angle="30"
+            app:r_drift_angle_step="1"
             app:r_drift_r_offset="80dp"/>
 
         <TextView

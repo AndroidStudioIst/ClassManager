@@ -1,5 +1,6 @@
 package com.cls.manager.iview
 
+import android.content.pm.ActivityInfo
 import android.view.LayoutInflater
 import com.angcyo.uiview.container.ContentLayout
 import com.cls.manager.R
@@ -30,8 +31,18 @@ class MainUIView : BaseContentUIView() {
         return false
     }
 
+    override fun getDefaultRequestedOrientation(): Int {
+        return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
+
     override fun inflateContentLayout(baseContentLayout: ContentLayout?, inflater: LayoutInflater?) {
         inflate(R.layout.activity_main)
     }
 
+    override fun initOnShowContentLayout() {
+        super.initOnShowContentLayout()
+        click(R.id.add_teacher) {
+            startIView(AddTeacherUIView())
+        }
+    }
 }
