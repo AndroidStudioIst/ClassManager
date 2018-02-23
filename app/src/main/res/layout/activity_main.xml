@@ -30,7 +30,6 @@
             android:gravity="center"
             android:text="按钮1"
             app:r_drift_angle="30"
-            app:r_drift_angle_step="1"
             app:r_drift_r_offset="80dp"/>
 
         <TextView
