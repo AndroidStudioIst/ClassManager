@@ -10,81 +10,49 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            style="@style/BaseMainTextStyle"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center"
-            android:background="@drawable/base_white_circle_shape"
-            android:gravity="center"
-            android:text="首页"
+        <com.angcyo.uiview.widget.RTextView
+            android:id="@+id/app_name_view"
+            style="@style/MainItemTextStyle"
+            android:padding="20dp"
+            android:text="@string/app_name_short"
             app:r_is_drift_center="true"/>
 
-        <TextView
+        <com.angcyo.uiview.widget.RTextView
             android:id="@+id/add_teacher"
-            style="@style/BaseMainTextStyle"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center"
-            android:background="@drawable/base_white_circle_shape"
-            android:gravity="center"
+            style="@style/MainItemTextStyle"
             android:text="按钮1"
             app:r_drift_angle="30"
             app:r_drift_r_offset="80dp"/>
 
-        <TextView
-            style="@style/BaseMainTextStyle"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center"
-            android:background="@drawable/base_white_circle_shape"
-            android:gravity="center"
+        <com.angcyo.uiview.widget.RTextView
+            style="@style/MainItemTextStyle"
             android:text="按钮2"
             app:r_drift_angle="90"
             app:r_drift_r_offset="60dp"/>
 
-        <TextView
-            style="@style/BaseMainTextStyle"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center"
-            android:background="@drawable/base_white_circle_shape"
-            android:gravity="center"
+        <com.angcyo.uiview.widget.RTextView
+            style="@style/MainItemTextStyle"
             android:text="按钮3"
             app:r_drift_angle="145"
             app:r_drift_r_offset="100dp"/>
 
-        <TextView
-            style="@style/BaseMainTextStyle"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center"
-            android:background="@drawable/base_white_circle_shape"
-            android:gravity="center"
+        <com.angcyo.uiview.widget.RTextView
+            style="@style/MainItemTextStyle"
             android:text="按钮4"
             app:r_drift_angle="180"
             app:r_drift_angle_step="0.05"
             app:r_drift_r_offset="80dp"/>
 
-        <TextView
-            style="@style/BaseMainTextStyle"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center"
-            android:background="@drawable/base_white_circle_shape"
-            android:gravity="center"
+        <com.angcyo.uiview.widget.RTextView
+            style="@style/MainItemTextStyle"
             android:text="按钮5"
             app:r_drift_angle="270"
             app:r_drift_r_offset="40dp"/>
 
-        <TextView
-            style="@style/BaseMainTextStyle"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="center"
-            android:background="@drawable/base_white_circle_shape"
-            android:gravity="center"
-            android:text="按钮6"
+        <com.angcyo.uiview.widget.RTextView
+            android:id="@+id/quit_button"
+            style="@style/MainItemTextStyle"
+            android:text="注销"
             app:r_drift_angle="350"
             app:r_drift_r_offset="80dp"/>
 

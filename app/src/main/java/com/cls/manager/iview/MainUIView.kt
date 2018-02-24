@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import com.angcyo.uiview.container.ContentLayout
 import com.cls.manager.R
 import com.cls.manager.base.BaseContentUIView
+import com.cls.manager.control.UserControl
+import com.orhanobut.hawk.Hawk
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.
@@ -41,8 +43,38 @@ class MainUIView : BaseContentUIView() {
 
     override fun initOnShowContentLayout() {
         super.initOnShowContentLayout()
-        click(R.id.add_teacher) {
-            startIView(AddTeacherUIView())
+        UserControl.loginUserBean?.let {
+            when (it.type) {
+                1 -> {
+                    //学生
+                    mViewHolder.tv(R.id.add_teacher).text = "添加课表"
+                    click(R.id.add_teacher) {
+                        startIView(AddTeacherUIView(false))
+                    }
+                }
+                2 -> {
+                    //老师
+                    mViewHolder.tv(R.id.add_teacher).text = "添加课表"
+                    click(R.id.add_teacher) {
+                        startIView(AddTeacherUIView())
+                    }
+                }
+                3 -> {
+                    //管理
+                    mViewHolder.gone(R.id.add_teacher)
+                }
+                4 -> {
+                    //超级
+                    mViewHolder.gone(R.id.add_teacher)
+
+                }
+            }
+        }
+
+        click(R.id.quit_button) {
+            UserControl.loginUserBean = null
+            Hawk.put("AUTO_LOGIN", false)
+            replaceIView(LoginUIView())
         }
     }
 }

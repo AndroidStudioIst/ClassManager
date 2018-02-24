@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="欢迎使用"
+            android:text="欢迎注册"
             android:textSize="30dp"/>
 
         <android.support.design.widget.TextInputLayout
@@ -49,36 +49,39 @@
                 android:maxLength="20"/>
         </android.support.design.widget.TextInputLayout>
 
-        <FrameLayout
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_xhdpi">
 
-            <android.support.v7.widget.AppCompatCheckBox
-                android:id="@+id/auto_login_cb"
-                style="@style/BaseMainTextStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="自动登录"/>
-
-            <TextView
-                android:id="@+id/register_button"
+            <com.angcyo.uiview.widget.ExEditText
+                android:id="@+id/pw_view2"
                 style="@style/BaseSingleMainTextStyle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:background="@drawable/base_bg_selector_v21"
-                android:padding="@dimen/base_ldpi"
-                android:text="立即注册"/>
+                android:hint="确认密码"
+                android:inputType="textWebPassword"
+                android:maxLength="20"/>
+        </android.support.design.widget.TextInputLayout>
 
-        </FrameLayout>
+        <TextView
+            android:id="@+id/user_type"
+            style="@style/BaseMainTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/base_35dpi"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="@dimen/base_xhdpi"
+            android:background="@color/base_chat_bg_color"
+            android:paddingStart="@dimen/base_xhdpi"
+            android:text="请选择角色"/>
 
         <com.angcyo.uiview.widget.Button
-            android:id="@+id/login_button"
+            android:id="@+id/register_button"
             style="@style/BaseSkinButtonStyle2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
-            android:text="登录"
+            android:text="立即注册"
             app:r_button_style="ROUND_GRADIENT_RECT"/>
 
     </LinearLayout>
