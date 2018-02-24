@@ -46,7 +46,7 @@ class RegisterUIView : BaseItemUIView() {
                 val pw2: ExEditText = holder.v(R.id.pw_view2)
 
                 holder.click(R.id.user_type) {
-                    startIView(UIItemSelectorDialog(listOf("学生", "教师","学生", "教师","学生", "教师","学生", "教师","学生", "教师","学生", "教师","学生", "教师","学生", "教师","学生", "教师","学生", "教师","学生", "教师","学生", "教师","学生", "教师","学生", "教师","学生", "教师")).apply {
+                    startIView(UIItemSelectorDialog(listOf("学生", "教师")).apply {
                         onItemSelector = { position, bean ->
                             userBean.type = position + 1
                             holder.tv(R.id.user_type).text = bean

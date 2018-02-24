@@ -20,13 +20,14 @@
         <com.angcyo.uiview.widget.RTextView
             android:id="@+id/add_teacher"
             style="@style/MainItemTextStyle"
-            android:text="按钮1"
+            android:text="添加课表"
             app:r_drift_angle="30"
             app:r_drift_r_offset="80dp"/>
 
         <com.angcyo.uiview.widget.RTextView
+            android:id="@+id/add_lesson"
             style="@style/MainItemTextStyle"
-            android:text="按钮2"
+            android:text="添加课程"
             app:r_drift_angle="90"
             app:r_drift_r_offset="60dp"/>
 

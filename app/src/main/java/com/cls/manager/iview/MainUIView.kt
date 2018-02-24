@@ -71,10 +71,16 @@ class MainUIView : BaseContentUIView() {
             }
         }
 
+        //退出登录
         click(R.id.quit_button) {
             UserControl.loginUserBean = null
             Hawk.put("AUTO_LOGIN", false)
             replaceIView(LoginUIView())
+        }
+
+        //添加课程
+        click(R.id.add_lesson) {
+            startIView(AddLessonUIView())
         }
     }
 }

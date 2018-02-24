@@ -2,14 +2,15 @@ package com.cls.manager.iview
 
 import android.content.pm.ActivityInfo
 import android.graphics.Color
+import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import cn.bmob.v3.BmobQuery
 import cn.bmob.v3.exception.BmobException
 import cn.bmob.v3.listener.FindListener
+import com.angcyo.bmob.RBmob
 import com.angcyo.uiview.container.ContentLayout
-import com.angcyo.uiview.dialog.UIDialog
-import com.angcyo.uiview.dialog.UIInputExDialog
+import com.angcyo.uiview.dialog.UIItemSelectorDialog
 import com.angcyo.uiview.dialog.UILoading
 import com.angcyo.uiview.kotlin.add
 import com.angcyo.uiview.kotlin.have
@@ -23,11 +24,14 @@ import com.angcyo.uiview.recycler.RRecyclerView
 import com.angcyo.uiview.recycler.adapter.RExBaseAdapter
 import com.angcyo.uiview.rsen.RefreshLayout
 import com.angcyo.uiview.skin.SkinHelper
+import com.angcyo.uiview.utils.RUtils
 import com.angcyo.uiview.utils.Tip
 import com.angcyo.uiview.utils.UI
 import com.cls.manager.R
 import com.cls.manager.base.BaseSingleRecyclerUIView
+import com.cls.manager.bean.LessonBean
 import com.cls.manager.bean.TeacherBean
+import com.cls.manager.control.UserControl
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.
@@ -42,7 +46,9 @@ import com.cls.manager.bean.TeacherBean
  */
 class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView<TeacherBean>() {
 
-    var teacherBean = TeacherBean()
+    var teacherBean = TeacherBean().apply {
+        name = UserControl.loginUserBean!!.name
+    }
 
     private val name: String
         get() {
@@ -87,27 +93,41 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
                 override fun done(p0: MutableList<TeacherBean>?, p1: BmobException?) {
                     if (p0?.isNotEmpty() != false) {
                         //Tip.tip("老师已存在, 是否更新数据?")
-                        UILoading.hide()
-                        UIDialog.build()
-                                .setDialogContent(existTip)
-                                .setOkListener {
-                                    teacherBean.updateObservable(p0!![0].objectId)
-                                            .subscribe(object : RLoadingSubscriber<Void>(mParentILayout) {
+//                        UILoading.hide()
+//                        UIDialog.build()
+//                                .setDialogContent(existTip)
+//                                .setOkListener {
+//                                    teacherBean.updateObservable(p0!![0].objectId)
+//                                            .subscribe(object : RLoadingSubscriber<Void>(mParentILayout) {
+//
+//                                                override fun onSucceed(bean: Void?) {
+//                                                    super.onSucceed(bean)
+//                                                    Tip.tip("更新课表成功")
+//                                                    finishIView()
+//                                                }
+//
+//                                                override fun onError(code: Int, msg: String?) {
+//                                                    super.onError(code, msg)
+//                                                    Tip.tip(msg)
+//                                                }
+//                                            })
+//                                }
+//                                .showDialog(mParentILayout)
 
-                                                override fun onSucceed(bean: Void?) {
-                                                    super.onSucceed(bean)
-                                                    Tip.tip("更新课表成功")
-                                                    finishIView()
-                                                }
+                        teacherBean.updateObservable(p0!![0].objectId)
+                                .subscribe(object : RLoadingSubscriber<Void>(mParentILayout) {
 
-                                                override fun onError(code: Int, msg: String?) {
-                                                    super.onError(code, msg)
-                                                    Tip.tip(msg)
-                                                }
-                                            })
-                                }
-                                .showDialog(mParentILayout)
+                                    override fun onSucceed(bean: Void?) {
+                                        super.onSucceed(bean)
+                                        Tip.tip("更新课表成功")
+                                        finishIView()
+                                    }
 
+                                    override fun onError(code: Int, msg: String?) {
+                                        super.onError(code, msg)
+                                        Tip.tip(msg)
+                                    }
+                                })
                     } else {
                         teacherBean.saveObservable()
                                 .subscribe(object : RLoadingSubscriber<String>(mParentILayout) {
@@ -158,17 +178,17 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
                     } else {
                         teacherBean.name
                     }
-                    holder.clickItem {
-                        startIView(UIInputExDialog().apply {
-                            inputDefaultString = teacherBean.name
-                            inputHintString = titleNameTip
-                            maxInputLength = 4
-                            onInputTextResult = {
-                                teacherBean.name = it
-                                notifyItemChanged(position)
-                            }
-                        })
-                    }
+//                    holder.clickItem {
+//                        startIView(UIInputExDialog().apply {
+//                            inputDefaultString = teacherBean.name
+//                            inputHintString = titleNameTip
+//                            maxInputLength = 4
+//                            onInputTextResult = {
+//                                teacherBean.name = it
+//                                notifyItemChanged(position)
+//                            }
+//                        })
+//                    }
                 }
                 1 -> {
                     holder.tv(R.id.text_view).text = "一"
@@ -216,6 +236,27 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
                     holder.tv(R.id.text_view).text = "${position / 6}"
                 }
                 else -> {
+                    if (!isTeacher) {
+                        holder.clickItem {
+                            if (RUtils.isListEmpty(lessonBeanList)) {
+                                Tip.tip("需要先添加课程\n才能选择")
+                                return@clickItem
+                            }
+
+                            startIView(UIItemSelectorDialog(lessonBeanList).apply {
+                                onInitItemLayout = { holder, posInData, dataBean ->
+                                    holder.tv(R.id.base_text_view).text = dataBean.name
+                                }
+                                onItemSelector = { _, bean ->
+                                    holder.tv(R.id.text_view).text = bean.name
+                                    holder.tv(R.id.text_view).setTextColor(Color.WHITE)
+                                    holder.itemView.setBackgroundColor(SkinHelper.getSkin().themeSubColor)
+                                }
+                            })
+                        }
+                        return
+                    }
+
                     val shl = 0b1.shl(position / 6 - 1)
 
                     fun setBg(w: Int) {
@@ -317,6 +358,39 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
     }
 
     override fun getDefaultLayoutState(): LayoutState {
-        return LayoutState.CONTENT
+        return LayoutState.LOAD
+    }
+
+    private val lessonBeanList = mutableListOf<LessonBean>()
+    override fun onViewShowFirst(bundle: Bundle?) {
+        super.onViewShowFirst(bundle)
+    }
+
+    override fun onUILoadData(page: Int) {
+        super.onUILoadData(page)
+        RBmob.query<LessonBean>().apply {
+            add(findObjects(object : FindListener<LessonBean>() {
+                override fun done(p0: MutableList<LessonBean>?, p1: BmobException?) {
+                    p0?.let {
+                        lessonBeanList.addAll(it)
+                    }
+                }
+            }))
+        }
+
+        if (isTeacher) {
+            val query = BmobQuery<TeacherBean>()
+            query.addWhereEqualTo("name", teacherBean.name)
+            query.findObjects(object : FindListener<TeacherBean>() {
+                override fun done(p0: MutableList<TeacherBean>?, p1: BmobException?) {
+                    if (!RUtils.isListEmpty(p0)) {
+                        teacherBean = p0!!.first()
+                    }
+                    showContentLayout()
+                }
+            })
+        } else {
+
+        }
     }
 }
