@@ -22,14 +22,11 @@ import com.angcyo.uiview.net.RLoadingSubscriber
 import com.angcyo.uiview.recycler.RBaseItemDecoration
 import com.angcyo.uiview.recycler.RBaseViewHolder
 import com.angcyo.uiview.recycler.RRecyclerView
-import com.angcyo.uiview.recycler.adapter.RExBaseAdapter
 import com.angcyo.uiview.rsen.RefreshLayout
 import com.angcyo.uiview.skin.SkinHelper
 import com.angcyo.uiview.utils.RUtils
 import com.angcyo.uiview.utils.Tip
-import com.angcyo.uiview.utils.UI
 import com.cls.manager.R
-import com.cls.manager.base.BaseSingleRecyclerUIView
 import com.cls.manager.bean.LessonBean
 import com.cls.manager.bean.StudentBean
 import com.cls.manager.bean.TeacherBean
@@ -46,7 +43,7 @@ import com.cls.manager.control.UserControl
  * 修改备注：
  * Version: 1.0.0
  */
-class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView<TeacherBean>() {
+open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<TeacherBean>() {
 
     var teacherBean = TeacherBean().apply {
         name = UserControl.loginUserBean!!.name
@@ -88,7 +85,7 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
                 }.setVisibility(View.GONE))
     }
 
-    private fun saveTeacher() {
+    protected open fun saveTeacher() {
         if (teacherBean.name.isEmpty()) {
             Tip.tip(titleNameTip)
         } else {
@@ -155,7 +152,7 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
         }
     }
 
-    private fun saveStudent() {
+    protected open fun saveStudent() {
         UILoading.progress(mParentILayout).setLoadingTipText("保存中...")
         RBmob.update(StudentBean::class.java, studentBean, "name:${studentBean.name}") {
             if (it.isEmpty()) {
@@ -168,98 +165,12 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
         }
     }
 
-    override fun createAdapter(): RExBaseAdapter<String, TeacherBean, String> = object : RExBaseAdapter<String, TeacherBean, String>(mActivity) {
-        override fun getItemCount(): Int {
-            return 66
-        }
-
-        override fun getItemLayoutId(viewType: Int): Int {
-            return R.layout.item_add_teacher
-        }
-
-        override fun onBindCommonView(holder: RBaseViewHolder, position: Int, bean: TeacherBean?) {
-            super.onBindCommonView(holder, position, bean)
-            if (mRecyclerView.measuredHeight > 0) {
-                UI.setViewHeight(holder.itemView, (mRecyclerView.measuredHeight - getDimensionPixelOffset(R.dimen.base_line) * 10) / 11)
-            }
-
-            holder.tv(R.id.text_view).setTextColor(getColor(R.color.base_text_color))
-            holder.itemView.setBackgroundColor(Color.TRANSPARENT)
-
-            val rowIndex = position / 6
-            when (position) {
-                0 -> {
-                    holder.itemView.setBackgroundColor(getColor(R.color.base_chat_bg_color))
-                    holder.tv(R.id.text_view).text = if (teacherBean.name.isEmpty()) {
-                        name
-                    } else {
-                        UserControl.loginUserBean!!.name
-                    }
-//                    holder.clickItem {
-//                        startIView(UIInputExDialog().apply {
-//                            inputDefaultString = teacherBean.name
-//                            inputHintString = titleNameTip
-//                            maxInputLength = 4
-//                            onInputTextResult = {
-//                                teacherBean.name = it
-//                                notifyItemChanged(position)
-//                            }
-//                        })
-//                    }
-                }
-                1 -> {
-                    holder.tv(R.id.text_view).text = "一"
-                }
-                2 -> {
-                    holder.tv(R.id.text_view).text = "二"
-                }
-                3 -> {
-                    holder.tv(R.id.text_view).text = "三"
-                }
-                4 -> {
-                    holder.tv(R.id.text_view).text = "四"
-                }
-                5 -> {
-                    holder.tv(R.id.text_view).text = "五"
-                }
-                1 * 6 -> {
-                    holder.tv(R.id.text_view).text = "$rowIndex"
-                }
-                2 * 6 -> {
-                    holder.tv(R.id.text_view).text = "$rowIndex"
-                }
-                3 * 6 -> {
-                    holder.tv(R.id.text_view).text = "$rowIndex"
-                }
-                4 * 6 -> {
-                    holder.tv(R.id.text_view).text = "$rowIndex"
-                }
-                5 * 6 -> {
-                    holder.tv(R.id.text_view).text = "$rowIndex"
-                }
-                6 * 6 -> {
-                    holder.tv(R.id.text_view).text = "$rowIndex"
-                }
-                7 * 6 -> {
-                    holder.tv(R.id.text_view).text = "$rowIndex"
-                }
-                8 * 6 -> {
-                    holder.tv(R.id.text_view).text = "$rowIndex"
-                }
-                9 * 6 -> {
-                    holder.tv(R.id.text_view).text = "$rowIndex"
-                }
-                10 * 6 -> {
-                    holder.tv(R.id.text_view).text = "$rowIndex"
-                }
-                else -> {
-                    if (isTeacher) {
-                        initTeacher(holder, position)
-                    } else {
-                        initStudent(holder, position)
-                    }
-                }
-            }
+    override fun onBindClassView(holder: RBaseViewHolder, position: Int, bean: TeacherBean?) {
+        super.onBindClassView(holder, position, bean)
+        if (isTeacher) {
+            initTeacher(holder, position)
+        } else {
+            initStudent(holder, position)
         }
     }
 
@@ -366,23 +277,26 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
         }
     }
 
-    private fun initTeacher(holder: RBaseViewHolder, position: Int) {
+
+    open fun setTeacherItem(holder: RBaseViewHolder, w: Int, position: Int) {
         val rowShl = 0b1.shl(position / 6 - 1)
 
-        fun setBg(w: Int) {
-            if (w.have(rowShl)) {
-                holder.itemView.setBackgroundColor(SkinHelper.getSkin().themeSubColor)
-                holder.tv(R.id.text_view).text = "√"
-                holder.tv(R.id.text_view).setTextColor(Color.WHITE)
-            } else {
-                holder.itemView.setBackgroundColor(Color.TRANSPARENT)
-                holder.tv(R.id.text_view).text = ""
-            }
+        if (w.have(rowShl)) {
+            holder.itemView.setBackgroundColor(SkinHelper.getSkin().themeSubColor)
+            holder.tv(R.id.text_view).text = "√"
+            holder.tv(R.id.text_view).setTextColor(Color.WHITE)
+        } else {
+            holder.itemView.setBackgroundColor(Color.TRANSPARENT)
+            holder.tv(R.id.text_view).text = ""
         }
+    }
+
+    protected open fun initTeacher(holder: RBaseViewHolder, position: Int) {
+        val rowShl = 0b1.shl(position / 6 - 1)
 
         when (position.rem(6)) {
             1 -> {//周一
-                setBg(teacherBean.w1)
+                setTeacherItem(holder, teacherBean.w1, position)
                 holder.clickItem {
                     if (teacherBean.w1.have(rowShl)) {
                         teacherBean.w1 = teacherBean.w1.remove(rowShl)
@@ -393,7 +307,7 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
                 }
             }
             2 -> {
-                setBg(teacherBean.w2)
+                setTeacherItem(holder, teacherBean.w2, position)
                 holder.clickItem {
                     if (teacherBean.w2.have(rowShl)) {
                         teacherBean.w2 = teacherBean.w2.remove(rowShl)
@@ -404,7 +318,7 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
                 }
             }
             3 -> {
-                setBg(teacherBean.w3)
+                setTeacherItem(holder, teacherBean.w3, position)
                 holder.clickItem {
                     if (teacherBean.w3.have(rowShl)) {
                         teacherBean.w3 = teacherBean.w3.remove(rowShl)
@@ -415,7 +329,7 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
                 }
             }
             4 -> {
-                setBg(teacherBean.w4)
+                setTeacherItem(holder, teacherBean.w4, position)
                 holder.clickItem {
                     if (teacherBean.w4.have(rowShl)) {
                         teacherBean.w4 = teacherBean.w4.remove(rowShl)
@@ -426,7 +340,7 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
                 }
             }
             5 -> {
-                setBg(teacherBean.w5)
+                setTeacherItem(holder, teacherBean.w5, position)
                 holder.clickItem {
                     if (teacherBean.w5.have(rowShl)) {
                         teacherBean.w5 = teacherBean.w5.remove(rowShl)
@@ -483,12 +397,6 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
             }))
         }
 
-        fun onEnd() {
-            showContentLayout()
-            resetUI()
-            uiTitleBarContainer.showRightItem(0)
-        }
-
         if (isTeacher) {
             val query = BmobQuery<TeacherBean>()
             query.addWhereEqualTo("name", teacherBean.name)
@@ -497,7 +405,7 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
                     if (!RUtils.isListEmpty(p0)) {
                         teacherBean = p0!!.first()
                     }
-                    onEnd()
+                    onShowContentData()
                 }
             })
         } else {
@@ -505,8 +413,14 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
                 if (!RUtils.isListEmpty(it)) {
                     studentBean = it.first()
                 }
-                onEnd()
+                onShowContentData()
             }
         }
+    }
+
+    protected open fun onShowContentData() {
+        showContentLayout()
+        resetUI()
+        uiTitleBarContainer.showRightItem(0)
     }
 }

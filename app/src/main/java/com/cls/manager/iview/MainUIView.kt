@@ -3,6 +3,7 @@ package com.cls.manager.iview
 import android.content.pm.ActivityInfo
 import android.view.LayoutInflater
 import com.angcyo.uiview.container.ContentLayout
+import com.angcyo.uiview.kotlin.clickIt
 import com.cls.manager.R
 import com.cls.manager.base.BaseContentUIView
 import com.cls.manager.control.UserControl
@@ -51,12 +52,22 @@ class MainUIView : BaseContentUIView() {
                     click(R.id.add_teacher) {
                         startIView(AddTeacherUIView(false))
                     }
+
+                    //添加课程
+                    mViewHolder.visible(R.id.add_lesson).clickIt {
+                        startIView(AddLessonUIView())
+                    }
                 }
                 2 -> {
                     //老师
                     mViewHolder.tv(R.id.add_teacher).text = "添加课表"
                     click(R.id.add_teacher) {
                         startIView(AddTeacherUIView())
+                    }
+
+                    //申请实验课室
+                    mViewHolder.visible(R.id.request_class).clickIt {
+                        startIView(RequestClassUIView())
                     }
                 }
                 3 -> {
@@ -76,11 +87,6 @@ class MainUIView : BaseContentUIView() {
             UserControl.loginUserBean = null
             Hawk.put("AUTO_LOGIN", false)
             replaceIView(LoginUIView())
-        }
-
-        //添加课程
-        click(R.id.add_lesson) {
-            startIView(AddLessonUIView())
         }
     }
 }
