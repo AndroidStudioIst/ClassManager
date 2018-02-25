@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.View
 import cn.bmob.v3.BmobQuery
 import cn.bmob.v3.exception.BmobException
 import cn.bmob.v3.listener.FindListener
@@ -30,6 +31,7 @@ import com.angcyo.uiview.utils.UI
 import com.cls.manager.R
 import com.cls.manager.base.BaseSingleRecyclerUIView
 import com.cls.manager.bean.LessonBean
+import com.cls.manager.bean.StudentBean
 import com.cls.manager.bean.TeacherBean
 import com.cls.manager.control.UserControl
 
@@ -47,6 +49,10 @@ import com.cls.manager.control.UserControl
 class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView<TeacherBean>() {
 
     var teacherBean = TeacherBean().apply {
+        name = UserControl.loginUserBean!!.name
+    }
+
+    var studentBean = StudentBean().apply {
         name = UserControl.loginUserBean!!.name
     }
 
@@ -79,7 +85,7 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
                     } else {
                         saveStudent()
                     }
-                })
+                }.setVisibility(View.GONE))
     }
 
     private fun saveTeacher() {
@@ -150,7 +156,16 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
     }
 
     private fun saveStudent() {
-        saveTeacher()
+        UILoading.progress(mParentILayout).setLoadingTipText("保存中...")
+        RBmob.update(StudentBean::class.java, studentBean, "name:${studentBean.name}") {
+            if (it.isEmpty()) {
+                Tip.tip("保存失败")
+            } else {
+                finishIView()
+                Tip.tip("保存成功")
+            }
+            UILoading.hide()
+        }
     }
 
     override fun createAdapter(): RExBaseAdapter<String, TeacherBean, String> = object : RExBaseAdapter<String, TeacherBean, String>(mActivity) {
@@ -165,18 +180,20 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
         override fun onBindCommonView(holder: RBaseViewHolder, position: Int, bean: TeacherBean?) {
             super.onBindCommonView(holder, position, bean)
             if (mRecyclerView.measuredHeight > 0) {
-                UI.setViewHeight(holder.itemView, mRecyclerView.measuredHeight / 11)
+                UI.setViewHeight(holder.itemView, (mRecyclerView.measuredHeight - getDimensionPixelOffset(R.dimen.base_line) * 10) / 11)
             }
 
             holder.tv(R.id.text_view).setTextColor(getColor(R.color.base_text_color))
             holder.itemView.setBackgroundColor(Color.TRANSPARENT)
 
+            val rowIndex = position / 6
             when (position) {
                 0 -> {
+                    holder.itemView.setBackgroundColor(getColor(R.color.base_chat_bg_color))
                     holder.tv(R.id.text_view).text = if (teacherBean.name.isEmpty()) {
                         name
                     } else {
-                        teacherBean.name
+                        UserControl.loginUserBean!!.name
                     }
 //                    holder.clickItem {
 //                        startIView(UIInputExDialog().apply {
@@ -206,131 +223,219 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
                     holder.tv(R.id.text_view).text = "五"
                 }
                 1 * 6 -> {
-                    holder.tv(R.id.text_view).text = "${position / 6}"
+                    holder.tv(R.id.text_view).text = "$rowIndex"
                 }
                 2 * 6 -> {
-                    holder.tv(R.id.text_view).text = "${position / 6}"
+                    holder.tv(R.id.text_view).text = "$rowIndex"
                 }
                 3 * 6 -> {
-                    holder.tv(R.id.text_view).text = "${position / 6}"
+                    holder.tv(R.id.text_view).text = "$rowIndex"
                 }
                 4 * 6 -> {
-                    holder.tv(R.id.text_view).text = "${position / 6}"
+                    holder.tv(R.id.text_view).text = "$rowIndex"
                 }
                 5 * 6 -> {
-                    holder.tv(R.id.text_view).text = "${position / 6}"
+                    holder.tv(R.id.text_view).text = "$rowIndex"
                 }
                 6 * 6 -> {
-                    holder.tv(R.id.text_view).text = "${position / 6}"
+                    holder.tv(R.id.text_view).text = "$rowIndex"
                 }
                 7 * 6 -> {
-                    holder.tv(R.id.text_view).text = "${position / 6}"
+                    holder.tv(R.id.text_view).text = "$rowIndex"
                 }
                 8 * 6 -> {
-                    holder.tv(R.id.text_view).text = "${position / 6}"
+                    holder.tv(R.id.text_view).text = "$rowIndex"
                 }
                 9 * 6 -> {
-                    holder.tv(R.id.text_view).text = "${position / 6}"
+                    holder.tv(R.id.text_view).text = "$rowIndex"
                 }
                 10 * 6 -> {
-                    holder.tv(R.id.text_view).text = "${position / 6}"
+                    holder.tv(R.id.text_view).text = "$rowIndex"
                 }
                 else -> {
-                    if (!isTeacher) {
-                        holder.clickItem {
-                            if (RUtils.isListEmpty(lessonBeanList)) {
-                                Tip.tip("需要先添加课程\n才能选择")
-                                return@clickItem
-                            }
-
-                            startIView(UIItemSelectorDialog(lessonBeanList).apply {
-                                onInitItemLayout = { holder, posInData, dataBean ->
-                                    holder.tv(R.id.base_text_view).text = dataBean.name
-                                }
-                                onItemSelector = { _, bean ->
-                                    holder.tv(R.id.text_view).text = bean.name
-                                    holder.tv(R.id.text_view).setTextColor(Color.WHITE)
-                                    holder.itemView.setBackgroundColor(SkinHelper.getSkin().themeSubColor)
-                                }
-                            })
-                        }
-                        return
-                    }
-
-                    val shl = 0b1.shl(position / 6 - 1)
-
-                    fun setBg(w: Int) {
-                        if (w.have(shl)) {
-                            holder.itemView.setBackgroundColor(SkinHelper.getSkin().themeSubColor)
-                            holder.tv(R.id.text_view).text = "√"
-                            holder.tv(R.id.text_view).setTextColor(Color.WHITE)
-                        } else {
-                            holder.itemView.setBackgroundColor(Color.TRANSPARENT)
-                            holder.tv(R.id.text_view).text = ""
-                        }
-                    }
-
-                    when (position.rem(6)) {
-                        1 -> {//周一
-                            setBg(teacherBean.w1)
-                            holder.clickItem {
-                                if (teacherBean.w1.have(shl)) {
-                                    teacherBean.w1 = teacherBean.w1.remove(shl)
-                                } else {
-                                    teacherBean.w1 = teacherBean.w1.add(shl)
-                                }
-                                notifyItemChanged(position)
-                            }
-                        }
-                        2 -> {
-                            setBg(teacherBean.w2)
-                            holder.clickItem {
-                                if (teacherBean.w2.have(shl)) {
-                                    teacherBean.w2 = teacherBean.w2.remove(shl)
-                                } else {
-                                    teacherBean.w2 = teacherBean.w2.add(shl)
-                                }
-                                notifyItemChanged(position)
-                            }
-                        }
-                        3 -> {
-                            setBg(teacherBean.w3)
-                            holder.clickItem {
-                                if (teacherBean.w3.have(shl)) {
-                                    teacherBean.w3 = teacherBean.w3.remove(shl)
-                                } else {
-                                    teacherBean.w3 = teacherBean.w3.add(shl)
-                                }
-                                notifyItemChanged(position)
-                            }
-                        }
-                        4 -> {
-                            setBg(teacherBean.w4)
-                            holder.clickItem {
-                                if (teacherBean.w4.have(shl)) {
-                                    teacherBean.w4 = teacherBean.w4.remove(shl)
-                                } else {
-                                    teacherBean.w4 = teacherBean.w4.add(shl)
-                                }
-                                notifyItemChanged(position)
-                            }
-                        }
-                        5 -> {
-                            setBg(teacherBean.w5)
-                            holder.clickItem {
-                                if (teacherBean.w5.have(shl)) {
-                                    teacherBean.w5 = teacherBean.w5.remove(shl)
-                                } else {
-                                    teacherBean.w5 = teacherBean.w5.add(shl)
-                                }
-                                notifyItemChanged(position)
-                            }
-                        }
+                    if (isTeacher) {
+                        initTeacher(holder, position)
+                    } else {
+                        initStudent(holder, position)
                     }
                 }
             }
+        }
+    }
 
+    private fun initStudent(holder: RBaseViewHolder, position: Int) {
+        val rowIndex = position / 6 - 1//横向第几行
 
+        fun setBg(list: List<String>) {
+            if (list[rowIndex].isEmpty()) {
+                holder.itemView.setBackgroundColor(Color.TRANSPARENT)
+                holder.tv(R.id.text_view).text = ""
+            } else {
+                holder.itemView.setBackgroundColor(SkinHelper.getSkin().themeSubColor)
+                holder.tv(R.id.text_view).text = list[rowIndex]
+                holder.tv(R.id.text_view).setTextColor(Color.WHITE)
+            }
+        }
+
+        when (position.rem(6)) {
+            1 -> {//周一
+                val wList = studentBean.w1List()
+                setBg(wList)
+                holder.clickItem {
+                    startIView(UIItemSelectorDialog(lessonBeanList).apply {
+                        onInitItemLayout = { holder, _, dataBean ->
+                            holder.tv(R.id.base_text_view).text = dataBean.name
+                        }
+                        onItemSelector = { _, bean ->
+                            studentBean.w1 = RUtils.connect(wList.apply {
+                                set(rowIndex, bean.name)
+                            })
+                            mExBaseAdapter.notifyItemChanged(position)
+                        }
+                    })
+                }
+            }
+            2 -> {
+                val wList = studentBean.w2List()
+                setBg(wList)
+                holder.clickItem {
+                    startIView(UIItemSelectorDialog(lessonBeanList).apply {
+                        onInitItemLayout = { holder, _, dataBean ->
+                            holder.tv(R.id.base_text_view).text = dataBean.name
+                        }
+                        onItemSelector = { _, bean ->
+                            studentBean.w2 = RUtils.connect(wList.apply {
+                                set(rowIndex, bean.name)
+                            })
+                            mExBaseAdapter.notifyItemChanged(position)
+                        }
+                    })
+                }
+            }
+            3 -> {
+                val wList = studentBean.w3List()
+                setBg(wList)
+                holder.clickItem {
+                    startIView(UIItemSelectorDialog(lessonBeanList).apply {
+                        onInitItemLayout = { holder, _, dataBean ->
+                            holder.tv(R.id.base_text_view).text = dataBean.name
+                        }
+                        onItemSelector = { _, bean ->
+                            studentBean.w3 = RUtils.connect(wList.apply {
+                                set(rowIndex, bean.name)
+                            })
+                            mExBaseAdapter.notifyItemChanged(position)
+                        }
+                    })
+                }
+            }
+            4 -> {
+                val wList = studentBean.w4List()
+                setBg(wList)
+                holder.clickItem {
+                    startIView(UIItemSelectorDialog(lessonBeanList).apply {
+                        onInitItemLayout = { holder, _, dataBean ->
+                            holder.tv(R.id.base_text_view).text = dataBean.name
+                        }
+                        onItemSelector = { _, bean ->
+                            studentBean.w4 = RUtils.connect(wList.apply {
+                                set(rowIndex, bean.name)
+                            })
+                            mExBaseAdapter.notifyItemChanged(position)
+                        }
+                    })
+                }
+            }
+            5 -> {
+                val wList = studentBean.w5List()
+                setBg(wList)
+                holder.clickItem {
+                    startIView(UIItemSelectorDialog(lessonBeanList).apply {
+                        onInitItemLayout = { holder, _, dataBean ->
+                            holder.tv(R.id.base_text_view).text = dataBean.name
+                        }
+                        onItemSelector = { _, bean ->
+                            studentBean.w5 = RUtils.connect(wList.apply {
+                                set(rowIndex, bean.name)
+                            })
+                            mExBaseAdapter.notifyItemChanged(position)
+                        }
+                    })
+                }
+            }
+        }
+    }
+
+    private fun initTeacher(holder: RBaseViewHolder, position: Int) {
+        val rowShl = 0b1.shl(position / 6 - 1)
+
+        fun setBg(w: Int) {
+            if (w.have(rowShl)) {
+                holder.itemView.setBackgroundColor(SkinHelper.getSkin().themeSubColor)
+                holder.tv(R.id.text_view).text = "√"
+                holder.tv(R.id.text_view).setTextColor(Color.WHITE)
+            } else {
+                holder.itemView.setBackgroundColor(Color.TRANSPARENT)
+                holder.tv(R.id.text_view).text = ""
+            }
+        }
+
+        when (position.rem(6)) {
+            1 -> {//周一
+                setBg(teacherBean.w1)
+                holder.clickItem {
+                    if (teacherBean.w1.have(rowShl)) {
+                        teacherBean.w1 = teacherBean.w1.remove(rowShl)
+                    } else {
+                        teacherBean.w1 = teacherBean.w1.add(rowShl)
+                    }
+                    mExBaseAdapter.notifyItemChanged(position)
+                }
+            }
+            2 -> {
+                setBg(teacherBean.w2)
+                holder.clickItem {
+                    if (teacherBean.w2.have(rowShl)) {
+                        teacherBean.w2 = teacherBean.w2.remove(rowShl)
+                    } else {
+                        teacherBean.w2 = teacherBean.w2.add(rowShl)
+                    }
+                    mExBaseAdapter.notifyItemChanged(position)
+                }
+            }
+            3 -> {
+                setBg(teacherBean.w3)
+                holder.clickItem {
+                    if (teacherBean.w3.have(rowShl)) {
+                        teacherBean.w3 = teacherBean.w3.remove(rowShl)
+                    } else {
+                        teacherBean.w3 = teacherBean.w3.add(rowShl)
+                    }
+                    mExBaseAdapter.notifyItemChanged(position)
+                }
+            }
+            4 -> {
+                setBg(teacherBean.w4)
+                holder.clickItem {
+                    if (teacherBean.w4.have(rowShl)) {
+                        teacherBean.w4 = teacherBean.w4.remove(rowShl)
+                    } else {
+                        teacherBean.w4 = teacherBean.w4.add(rowShl)
+                    }
+                    mExBaseAdapter.notifyItemChanged(position)
+                }
+            }
+            5 -> {
+                setBg(teacherBean.w5)
+                holder.clickItem {
+                    if (teacherBean.w5.have(rowShl)) {
+                        teacherBean.w5 = teacherBean.w5.remove(rowShl)
+                    } else {
+                        teacherBean.w5 = teacherBean.w5.add(rowShl)
+                    }
+                    mExBaseAdapter.notifyItemChanged(position)
+                }
+            }
         }
     }
 
@@ -378,6 +483,12 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
             }))
         }
 
+        fun onEnd() {
+            showContentLayout()
+            resetUI()
+            uiTitleBarContainer.showRightItem(0)
+        }
+
         if (isTeacher) {
             val query = BmobQuery<TeacherBean>()
             query.addWhereEqualTo("name", teacherBean.name)
@@ -386,11 +497,16 @@ class AddTeacherUIView(val isTeacher: Boolean = true) : BaseSingleRecyclerUIView
                     if (!RUtils.isListEmpty(p0)) {
                         teacherBean = p0!!.first()
                     }
-                    showContentLayout()
+                    onEnd()
                 }
             })
         } else {
-
+            RBmob.query<StudentBean>(StudentBean::class.java, "name:${studentBean.name}") {
+                if (!RUtils.isListEmpty(it)) {
+                    studentBean = it.first()
+                }
+                onEnd()
+            }
         }
     }
 }

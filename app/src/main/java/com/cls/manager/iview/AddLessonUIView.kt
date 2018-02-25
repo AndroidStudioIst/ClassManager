@@ -1,6 +1,7 @@
 package com.cls.manager.iview
 
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Rect
 import android.text.TextPaint
 import android.view.View
@@ -13,7 +14,9 @@ import com.angcyo.uiview.model.TitleBarPattern
 import com.angcyo.uiview.recycler.RBaseViewHolder
 import com.angcyo.uiview.recycler.RExItemDecoration
 import com.angcyo.uiview.recycler.RRecyclerView
+import com.angcyo.uiview.recycler.adapter.RBaseSwipeAdapter
 import com.angcyo.uiview.recycler.adapter.RExBaseAdapter
+import com.angcyo.uiview.recycler.widget.MenuBuilder
 import com.angcyo.uiview.utils.T_
 import com.cls.manager.R
 import com.cls.manager.base.BaseSingleRecyclerUIView
@@ -36,7 +39,7 @@ class AddLessonUIView : BaseSingleRecyclerUIView<LessonBean>() {
         return super.getTitleBar().setTitleString("添加课程")
     }
 
-    override fun createAdapter(): RExBaseAdapter<String, LessonBean, String> = object : RExBaseAdapter<String, LessonBean, String>(mActivity) {
+    override fun createAdapter(): RExBaseAdapter<String, LessonBean, String> = object : RBaseSwipeAdapter<String, LessonBean, String>(mActivity) {
         override fun getItemLayoutId(viewType: Int): Int {
             if (isFooterItemType(viewType)) {
                 return R.layout.item_button_layout
@@ -48,6 +51,35 @@ class AddLessonUIView : BaseSingleRecyclerUIView<LessonBean>() {
         override fun onBindDataView(holder: RBaseViewHolder, posInData: Int, dataBean: LessonBean?) {
             super.onBindDataView(holder, posInData, dataBean)
             holder.tv(R.id.base_text_view).text = dataBean!!.name
+        }
+
+        override fun onBindMenuView(menuBuilder: MenuBuilder, viewType: Int, position: Int) {
+            super.onBindMenuView(menuBuilder, viewType, position)
+            if (!isLast(position)) {
+                menuBuilder.addMenu("删除", Color.RED) {
+//                    RBmob.delete<LessonBean>("name:${allDatas[position].name}") {
+//                        T_.info("删除完成")
+//                    }
+
+                    RBmob.delete<LessonBean>(LessonBean::class.java, "name:${allDatas[position].name}") {
+                        T_.info("删除完成")
+                    }
+
+                    deleteItem(position)
+
+//                    RBmob.query<LessonBean>().apply {
+//                        addWhereEqualTo("name1", allDatas[position].name)
+//                        findObjects(object : FindListener<LessonBean>() {
+//                            override fun done(resultList: MutableList<LessonBean>?, exception: BmobException?) {
+//                                if (RUtils.isListEmpty(resultList)) {
+//                                } else {
+//
+//                                }
+//                            }
+//                        })
+//                    }
+                }
+            }
         }
 
         override fun onBindFooterView(holder: RBaseViewHolder, posInFooter: Int, footerBean: String?) {
@@ -81,6 +113,10 @@ class AddLessonUIView : BaseSingleRecyclerUIView<LessonBean>() {
                 })
             }
         }
+    }
+
+    override fun getRecyclerRootLayoutId(): Int {
+        return R.layout.view_lesson_layout
     }
 
     override fun initRecyclerView(recyclerView: RRecyclerView?, baseContentLayout: ContentLayout?) {
