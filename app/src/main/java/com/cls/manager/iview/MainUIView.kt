@@ -3,9 +3,11 @@ package com.cls.manager.iview
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.view.LayoutInflater
+import com.angcyo.uiview.RCrashHandler
 import com.angcyo.uiview.container.ContentLayout
 import com.angcyo.uiview.kotlin.clickIt
 import com.angcyo.uiview.model.TitleBarPattern
+import com.cls.manager.BuildConfig
 import com.cls.manager.R
 import com.cls.manager.base.BaseContentUIView
 import com.cls.manager.control.UserControl
@@ -49,6 +51,11 @@ class MainUIView : BaseContentUIView() {
 
     override fun initOnShowContentLayout() {
         super.initOnShowContentLayout()
+
+        if (BuildConfig.SHOW_DEBUG) {
+            RCrashHandler.checkCrash(mParentILayout)
+        }
+
         UserControl.loginUserBean?.let {
             when (it.type) {
                 1 -> {

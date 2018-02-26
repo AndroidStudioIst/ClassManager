@@ -10,6 +10,7 @@ import com.orhanobut.hawk.Hawk
 class MainActivity : UILayoutActivity() {
     override fun onLoadView(intent: Intent?) {
         //startIView(MainUIView(), false)
+        checkPermissions()
         if (Hawk.get("AUTO_LOGIN", false)) {
             UserControl.loginUser(Hawk.get("NAME", ""), Hawk.get("PW", "")) {
                 if (it == null) {

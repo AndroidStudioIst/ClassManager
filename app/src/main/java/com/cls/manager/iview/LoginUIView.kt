@@ -1,6 +1,7 @@
 package com.cls.manager.iview
 
 import android.view.Gravity
+import com.angcyo.uiview.RCrashHandler
 import com.angcyo.uiview.base.Item
 import com.angcyo.uiview.base.SingleItem
 import com.angcyo.uiview.dialog.UILoading
@@ -8,6 +9,7 @@ import com.angcyo.uiview.model.TitleBarPattern
 import com.angcyo.uiview.recycler.RBaseViewHolder
 import com.angcyo.uiview.utils.T_
 import com.angcyo.uiview.widget.ExEditText
+import com.cls.manager.BuildConfig
 import com.cls.manager.R
 import com.cls.manager.base.BaseItemUIView
 import com.cls.manager.control.UserControl
@@ -46,6 +48,10 @@ class LoginUIView : BaseItemUIView() {
                 }
                 holder.click(R.id.login_button) {
 
+//                    if (BuildConfig.DEBUG) {
+//                        val i = 1 / 0
+//                    }
+
                     if (name.checkEmpty() || pw.checkEmpty()) {
                         T_.error("请检查输入")
                     } else {
@@ -69,6 +75,13 @@ class LoginUIView : BaseItemUIView() {
             }
 
         })
+    }
+
+    override fun initOnShowContentLayout() {
+        super.initOnShowContentLayout()
+        if (BuildConfig.SHOW_DEBUG) {
+            RCrashHandler.checkCrash(mParentILayout)
+        }
     }
 
 }
