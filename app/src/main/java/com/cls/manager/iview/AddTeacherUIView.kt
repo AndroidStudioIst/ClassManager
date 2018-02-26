@@ -178,7 +178,7 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
         }
         UILoading.progress(mParentILayout).setLoadingTipText("保存中...")
         RBmob.update(StudentBean::class.java, studentBean, "name:$selectorClassName") {
-            if (it.isEmpty()) {
+            if (TextUtils.isEmpty(it)) {
                 Tip.tip("保存失败")
             } else {
                 finishIView()

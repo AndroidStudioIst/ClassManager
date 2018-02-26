@@ -29,6 +29,7 @@ class VerifyClassUIView : RequestClassUIView() {
     /*所有老师的请求*/
     private var requestClassList = mutableListOf<RequestClassBean>()
 
+
     override fun getTitleBar(): TitleBarPattern {
         return super.getTitleBar().setTitleString(if (isSeeClass) {
             "班级课表"
@@ -85,18 +86,32 @@ class VerifyClassUIView : RequestClassUIView() {
     override fun saveTeacher() {
         //super.saveTeacher()
         UILoading.progress(mParentILayout).setLoadingTipText("正在审批...")
+        val list = mutableListOf<RequestClassBean>()
         for (bean in mExBaseAdapter.allDatas) {
-            bean.selectorRequest?.let {
-                RBmob.update(RequestClassBean::class.java, it, "name:${it.name}") {
-                    if (it.isEmpty()) {
-                        T_.error("操作失败")
-                    } else {
-                        T_.error("审批成功")
-                        finishIView()
-                    }
-                    UILoading.hide()
-                }
+            if (!RUtils.isListEmpty(bean.requestList)) {
+                list.addAll(bean.requestList)
             }
+
+//            bean.selectorRequest?.let {
+//                RBmob.update(RequestClassBean::class.java, it, "name:${it.name}") {
+//                    if (it.isEmpty()) {
+//                        T_.error("操作失败")
+//                    } else {
+//                        T_.error("审批成功")
+//                        finishIView()
+//                    }
+//                    UILoading.hide()
+//                }
+//            }
+        }
+        RBmob.update(list) {
+            if (it.isEmpty()) {
+                T_.error("操作失败")
+            } else {
+                T_.error("审批成功")
+                finishIView()
+            }
+            UILoading.hide()
         }
     }
 
@@ -127,6 +142,13 @@ class VerifyClassUIView : RequestClassUIView() {
             teacherBean.requestList.addAll(rBeanList)
         }
 
+        for (bean in rBeanList) {
+            if (bean.success.contains("$row:$column")) {
+                teacherBean.selectorRequest = bean
+                break
+            }
+        }
+
         holder.clickItem { }
 
         if (count == 0) {
@@ -154,9 +176,14 @@ class VerifyClassUIView : RequestClassUIView() {
                         holder.tv(R.id.base_text_view).text = dataBean.name
                     }
                     onItemSelector = { _, bean ->
-                        teacherBean.selectorRequest = bean
-                        teacherBean.selectorRequest.addSuccess("$row:$column")
-
+                        for (request in teacherBean.requestList) {
+                            if (request == bean) {
+                                teacherBean.selectorRequest = request
+                                teacherBean.selectorRequest.addSuccess("$row:$column")
+                            } else {
+                                request.addRequest("$row:$column")
+                            }
+                        }
                         mExBaseAdapter.notifyItemChanged(position)
                     }
                 })

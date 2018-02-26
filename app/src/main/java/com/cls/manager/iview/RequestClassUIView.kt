@@ -75,7 +75,7 @@ open class RequestClassUIView : AddTeacherUIView(true) {
         //super.saveTeacher()
         UILoading.progress(mParentILayout)
         RBmob.update<RequestClassBean>(RequestClassBean::class.java, requestClassBean, "name:${requestClassBean.name}") {
-            if (it.isEmpty()) {
+            if (TextUtils.isEmpty(it)) {
                 Tip.tip("保存失败")
             } else {
                 finishIView()

@@ -1,5 +1,7 @@
 package com.cls.manager.bean;
 
+import android.text.TextUtils;
+
 import java.util.List;
 
 import cn.bmob.v3.BmobObject;
@@ -92,5 +94,10 @@ public class TeacherBean extends BmobObject {
 
     public void setSelectorRequest(RequestClassBean selectorRequest) {
         this.selectorRequest = selectorRequest;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return TextUtils.equals(this.getObjectId(), ((TeacherBean) obj).getObjectId());
     }
 }
