@@ -32,6 +32,7 @@ class MainUIView : BaseContentUIView() {
                 .setFloating(true)
                 .setTitleBarBGColor(Color.TRANSPARENT)
                 .setTitleString(when (UserControl.loginUserBean!!.type) {
+                    2 -> UserControl.loginUserBean!!.name
                     3 -> "管理员 ${UserControl.loginUserBean!!.name}"
                     4 -> "超级管理员 ${UserControl.loginUserBean!!.name}"
                     else -> "${UserControl.loginUserBean!!.className} ${UserControl.loginUserBean!!.name}"
