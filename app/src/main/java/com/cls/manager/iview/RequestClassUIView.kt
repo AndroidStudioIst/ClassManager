@@ -1,8 +1,10 @@
 package com.cls.manager.iview
 
 import android.graphics.Color
+import android.text.TextUtils
 import android.widget.TextView
 import com.angcyo.bmob.RBmob
+import com.angcyo.uiview.dialog.UIItemSelectorDialog
 import com.angcyo.uiview.dialog.UILoading
 import com.angcyo.uiview.kotlin.have
 import com.angcyo.uiview.model.TitleBarPattern
@@ -11,6 +13,7 @@ import com.angcyo.uiview.utils.RUtils
 import com.angcyo.uiview.utils.Tip
 import com.cls.manager.R
 import com.cls.manager.bean.RequestClassBean
+import com.cls.manager.bean.StudentBean
 import com.cls.manager.control.UserControl
 
 /**
@@ -28,12 +31,19 @@ open class RequestClassUIView : AddTeacherUIView(true) {
     }
 
     override fun onShowContentData() {
-        RBmob.query<RequestClassBean>(RequestClassBean::class.java, "name:${requestClassBean.name}") {
-            if (!RUtils.isListEmpty(it)) {
-                requestClassBean = it.first()
+
+        //查询所有班级
+        RBmob.query<StudentBean>(StudentBean::class.java, "") {
+            allStudentList.addAll(it)
+
+            //查询老师课室的请求
+            RBmob.query<RequestClassBean>(RequestClassBean::class.java, "name:${requestClassBean.name}") {
+                if (!RUtils.isListEmpty(it)) {
+                    requestClassBean = it.first()
+                }
+                showContentLayout()
+                uiTitleBarContainer.getRightView<TextView>(0).text = "申请"
             }
-            showContentLayout()
-            uiTitleBarContainer.getRightView<TextView>(0).text = "申请"
         }
     }
 
@@ -96,6 +106,11 @@ open class RequestClassUIView : AddTeacherUIView(true) {
                 holder.tv(R.id.text_view).setTextColor(Color.WHITE)
                 holder.itemView.setBackgroundColor(getColor(R.color.theme_color_accent))
                 holder.tv(R.id.text_view).text = "已申请"
+
+                holder.clickItem {
+                    //显示多少个班级能上课
+                    showClass(position)
+                }
             } else if (requestClassBean.request.contains("$row:$column")) {
                 holder.itemView.setBackgroundColor(getColor(R.color.base_chat_bg_color))
                 holder.tv(R.id.text_view).text = "申请中"
@@ -110,6 +125,65 @@ open class RequestClassUIView : AddTeacherUIView(true) {
                     mExBaseAdapter.notifyItemChanged(position)
                 }
             }
+        }
+    }
+
+    /*显示一可以上课的班级*/
+    private fun showClass(position: Int) {
+        val classs = mutableListOf<String>()
+
+        val rowIndex = position / 6 - 1//横向第几行
+        var wList: List<String>
+
+        when (position.rem(6)) {
+            1 -> {//周一
+                for (bean in allStudentList) {
+                    wList = bean.w1List()
+                    if (!TextUtils.isEmpty(wList[rowIndex])) {
+                        classs.add(bean.name)
+                    }
+                }
+            }
+            2 -> {
+                for (bean in allStudentList) {
+                    wList = bean.w2List()
+                    if (!TextUtils.isEmpty(wList[rowIndex])) {
+                        classs.add(bean.name)
+                    }
+                }
+            }
+            3 -> {
+                for (bean in allStudentList) {
+                    wList = bean.w3List()
+                    if (!TextUtils.isEmpty(wList[rowIndex])) {
+                        classs.add(bean.name)
+                    }
+                }
+            }
+            4 -> {
+                for (bean in allStudentList) {
+                    wList = bean.w4List()
+                    if (!TextUtils.isEmpty(wList[rowIndex])) {
+                        classs.add(bean.name)
+                    }
+                }
+            }
+            5 -> {
+                for (bean in allStudentList) {
+                    wList = bean.w5List()
+                    if (!TextUtils.isEmpty(wList[rowIndex])) {
+                        classs.add(bean.name)
+                    }
+                }
+            }
+        }
+
+        if (classs.isEmpty()) {
+            Tip.tip("暂无班级有空余时间")
+        } else {
+            startIView(UIItemSelectorDialog(classs).apply {
+                titleString = "以下班级有空余时间"
+            })
         }
     }
 }
