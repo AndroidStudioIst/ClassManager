@@ -74,6 +74,15 @@ class MainUIView : BaseContentUIView() {
                         startIView(AddTeacherUIView())
                     }
 
+
+                    mViewHolder.tv(R.id.add_lesson).text = "查看班级课表"
+                    mViewHolder.visible(R.id.add_lesson).clickIt {
+                        startIView(VerifyClassUIView().apply {
+                            isSeeClass = true
+                            isAddClass = true
+                        })
+                    }
+
                     //申请实验课室
                     mViewHolder.visible(R.id.request_class).clickIt {
                         startIView(RequestClassUIView())

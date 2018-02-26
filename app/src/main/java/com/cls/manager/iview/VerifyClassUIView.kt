@@ -30,10 +30,20 @@ class VerifyClassUIView : RequestClassUIView() {
     private var requestClassList = mutableListOf<RequestClassBean>()
 
     override fun getTitleBar(): TitleBarPattern {
-        return super.getTitleBar().setTitleString("审核课室")
+        return super.getTitleBar().setTitleString(if (isSeeClass) {
+            "班级课表"
+        } else {
+            "审核课室"
+        })
     }
 
     override fun onShowContentData() {
+        if (isSeeClass) {
+            showContentLayout()
+            uiTitleBarContainer.hideRightItem(0)
+            return
+        }
+
         RBmob.query<RequestClassBean>(RequestClassBean::class.java, "") {
             if (!RUtils.isListEmpty(it)) {
                 requestClassList.addAll(it)

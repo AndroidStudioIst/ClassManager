@@ -47,6 +47,9 @@ import com.cls.manager.control.UserControl
  */
 open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<TeacherBean>() {
 
+    //只是查看班级列表
+    var isSeeClass = false
+
     var teacherBean = TeacherBean().apply {
         name = UserControl.loginUserBean!!.name
     }
@@ -219,7 +222,11 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
     override fun onBindClassView(holder: RBaseViewHolder, position: Int, bean: TeacherBean?) {
         super.onBindClassView(holder, position, bean)
         if (isTeacher) {
-            initTeacher(holder, position)
+            if (isSeeClass) {
+                initStudent(holder, position)
+            } else {
+                initTeacher(holder, position)
+            }
         } else {
             if (UserControl.isStudent()) {
             } else {
@@ -251,6 +258,9 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
                 val wList = studentBean.w1List()
                 setBg(wList)
                 holder.clickItem {
+                    if (isSeeClass) {
+                        return@clickItem
+                    }
                     startIView(UIItemSelectorDialog(lessonBeanList).apply {
                         onInitItemLayout = { holder, _, dataBean ->
                             holder.tv(R.id.base_text_view).text = dataBean.name
@@ -268,6 +278,9 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
                 val wList = studentBean.w2List()
                 setBg(wList)
                 holder.clickItem {
+                    if (isSeeClass) {
+                        return@clickItem
+                    }
                     startIView(UIItemSelectorDialog(lessonBeanList).apply {
                         onInitItemLayout = { holder, _, dataBean ->
                             holder.tv(R.id.base_text_view).text = dataBean.name
@@ -285,6 +298,9 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
                 val wList = studentBean.w3List()
                 setBg(wList)
                 holder.clickItem {
+                    if (isSeeClass) {
+                        return@clickItem
+                    }
                     startIView(UIItemSelectorDialog(lessonBeanList).apply {
                         onInitItemLayout = { holder, _, dataBean ->
                             holder.tv(R.id.base_text_view).text = dataBean.name
@@ -302,6 +318,9 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
                 val wList = studentBean.w4List()
                 setBg(wList)
                 holder.clickItem {
+                    if (isSeeClass) {
+                        return@clickItem
+                    }
                     startIView(UIItemSelectorDialog(lessonBeanList).apply {
                         onInitItemLayout = { holder, _, dataBean ->
                             holder.tv(R.id.base_text_view).text = dataBean.name
@@ -319,6 +338,9 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
                 val wList = studentBean.w5List()
                 setBg(wList)
                 holder.clickItem {
+                    if (isSeeClass) {
+                        return@clickItem
+                    }
                     startIView(UIItemSelectorDialog(lessonBeanList).apply {
                         onInitItemLayout = { holder, _, dataBean ->
                             holder.tv(R.id.base_text_view).text = dataBean.name
@@ -465,7 +487,25 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
                     if (!RUtils.isListEmpty(p0)) {
                         teacherBean = p0!!.first()
                     }
-                    onShowContentData()
+
+                    if (isSeeClass) {
+                        //先查询所有班级对应的课程
+                        RBmob.query<StudentBean>(StudentBean::class.java, "") {
+                            allStudentList.addAll(it)
+
+                            //在查询所有班级
+                            RBmob.query<UserBean>(UserBean::class.java, "") {
+                                for (bean in it) {
+                                    if (!TextUtils.isEmpty(bean.className) && !allClassList.contains(bean.className)) {
+                                        allClassList.add(bean.className)
+                                    }
+                                }
+                                onShowContentData()
+                            }
+                        }
+                    } else {
+                        onShowContentData()
+                    }
                 }
             })
         } else {
