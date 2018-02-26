@@ -2,6 +2,7 @@ package com.cls.manager.iview
 
 import android.text.TextUtils
 import android.view.Gravity
+import android.view.View
 import android.view.animation.Animation
 import com.angcyo.uiview.base.Item
 import com.angcyo.uiview.base.SingleItem
@@ -64,6 +65,23 @@ class RegisterUIView : BaseItemUIView() {
                             }
                         }
                     })
+                }
+
+                holder.v<View>(R.id.user_type).setOnLongClickListener {
+                    startIView(UIItemSelectorDialog(listOf("学生", "教师", "管理员")).apply {
+                        onItemSelector = { position, bean ->
+                            userBean.type = position + 1
+                            holder.tv(R.id.user_type).text = bean
+
+                            if (position == 0) {
+                                holder.visible(R.id.class_layout)
+                            } else {
+                                cls.setText("")
+                                holder.gone(R.id.class_layout)
+                            }
+                        }
+                    })
+                    true
                 }
 
                 holder.click(R.id.register_button) {
