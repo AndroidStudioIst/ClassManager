@@ -15,6 +15,7 @@ public class UserBean extends BaseBmob {
     private String pw = "";
     private int level = 1; //用户等级, 用来做权限控制
     private int type = 1; //用户类型, 角色区分   1:学生 2:老师 3:管理 4:超级
+    private String className = "";//班级名称
 
     public int getType() {
         return type;
@@ -38,6 +39,14 @@ public class UserBean extends BaseBmob {
 
     public void setPw(String pw) {
         this.pw = pw;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
     }
 
 

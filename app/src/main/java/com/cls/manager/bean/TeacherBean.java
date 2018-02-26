@@ -1,5 +1,7 @@
 package com.cls.manager.bean;
 
+import java.util.List;
+
 import cn.bmob.v3.BmobObject;
 
 /**
@@ -22,6 +24,11 @@ public class TeacherBean extends BmobObject {
     private int w3 = 0b0;
     private int w4 = 0b0;
     private int w5 = 0b0;
+
+    //多少个老师
+    private transient List<RequestClassBean> requestList;
+    //选中了那个老师
+    private transient RequestClassBean selectorRequest;
 
     public String getName() {
         return name;
@@ -69,5 +76,21 @@ public class TeacherBean extends BmobObject {
 
     public void setW5(int w5) {
         this.w5 = w5;
+    }
+
+    public List<RequestClassBean> getRequestList() {
+        return requestList;
+    }
+
+    public void setRequestList(List<RequestClassBean> requestList) {
+        this.requestList = requestList;
+    }
+
+    public RequestClassBean getSelectorRequest() {
+        return selectorRequest;
+    }
+
+    public void setSelectorRequest(RequestClassBean selectorRequest) {
+        this.selectorRequest = selectorRequest;
     }
 }

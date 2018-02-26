@@ -17,7 +17,7 @@ import com.cls.manager.control.UserControl
  * Created by angcyo on 2018-02-25.
  */
 
-class RequestClassUIView : AddTeacherUIView(true) {
+open class RequestClassUIView : AddTeacherUIView(true) {
 
     var requestClassBean = RequestClassBean().apply {
         name = UserControl.loginUserBean!!.name
@@ -32,49 +32,31 @@ class RequestClassUIView : AddTeacherUIView(true) {
             if (!RUtils.isListEmpty(it)) {
                 requestClassBean = it.first()
             }
-            super.onShowContentData()
+            showContentLayout()
             uiTitleBarContainer.getRightView<TextView>(0).text = "申请"
         }
     }
 
     override fun initTeacher(holder: RBaseViewHolder, position: Int) {
         //super.initTeacher(holder, position)
-        val row = position / 6  //第几行
+        //val row = position / 6  //第几行
         val column = position.rem(6) //第几列
-
-        val rowShl = 0b1.shl(row - 1)
 
         when (column) {
             1 -> {//周一
                 setTeacherItem(holder, teacherBean.w1, position)
-                if (teacherBean.w1.have(rowShl)) {
-                } else {
-
-                }
             }
             2 -> {
                 setTeacherItem(holder, teacherBean.w2, position)
-                if (teacherBean.w2.have(rowShl)) {
-                } else {
-                }
             }
             3 -> {
                 setTeacherItem(holder, teacherBean.w3, position)
-                if (teacherBean.w3.have(rowShl)) {
-                } else {
-                }
             }
             4 -> {
                 setTeacherItem(holder, teacherBean.w4, position)
-                if (teacherBean.w4.have(rowShl)) {
-                } else {
-                }
             }
             5 -> {
                 setTeacherItem(holder, teacherBean.w5, position)
-                if (teacherBean.w5.have(rowShl)) {
-                } else {
-                }
             }
         }
     }
@@ -124,7 +106,7 @@ class RequestClassUIView : AddTeacherUIView(true) {
                     holder.tv(R.id.text_view).text = "申请失败"
                 }
                 holder.clickItem {
-                    requestClassBean.request = "${requestClassBean.request},$row:$column"
+                    requestClassBean.addRequest("$row:$column")
                     mExBaseAdapter.notifyItemChanged(position)
                 }
             }

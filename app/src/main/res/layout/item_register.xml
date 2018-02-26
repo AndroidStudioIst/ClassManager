@@ -2,12 +2,13 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:app="http://schemas.android.com/apk/res-auto"
              android:layout_width="match_parent"
-             android:layout_height="match_parent">
+             android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:paddingBottom="40dp"
         android:paddingEnd="@dimen/base_xhdpi"
         android:paddingStart="@dimen/base_xhdpi"
         android:paddingTop="80dp">
@@ -61,6 +62,22 @@
                 android:layout_height="wrap_content"
                 android:hint="确认密码"
                 android:inputType="textWebPassword"
+                android:maxLength="20"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/class_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/base_xhdpi"
+            android:visibility="gone">
+
+            <com.angcyo.uiview.widget.ExEditText
+                android:id="@+id/class_view"
+                style="@style/BaseSingleMainTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="请输入班级名"
                 android:maxLength="20"/>
         </android.support.design.widget.TextInputLayout>
 

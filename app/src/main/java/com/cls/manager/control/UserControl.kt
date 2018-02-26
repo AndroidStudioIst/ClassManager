@@ -23,6 +23,24 @@ object UserControl {
     /**登录成功后, 保存的用户数据Bean*/
     var loginUserBean: UserBean? = null
 
+    fun isStudent() = if (loginUserBean == null) {
+        false
+    } else {
+        loginUserBean!!.type == 1
+    }
+
+    fun isTeacher() = if (loginUserBean == null) {
+        false
+    } else {
+        loginUserBean!!.type == 2
+    }
+
+    fun isAdmin() = if (loginUserBean == null) {
+        false
+    } else {
+        loginUserBean!!.type == 3
+    }
+
     /**判断用户是否存在*/
     fun isUserExist(name: String, result: (exist: Boolean) -> Unit): Subscription {
         val query = BmobQuery<UserBean>()

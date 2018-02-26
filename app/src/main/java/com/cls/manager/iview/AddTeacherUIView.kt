@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.TextUtils
 import android.view.View
 import cn.bmob.v3.BmobQuery
 import cn.bmob.v3.exception.BmobException
@@ -30,6 +31,7 @@ import com.cls.manager.R
 import com.cls.manager.bean.LessonBean
 import com.cls.manager.bean.StudentBean
 import com.cls.manager.bean.TeacherBean
+import com.cls.manager.bean.UserBean
 import com.cls.manager.control.UserControl
 
 /**
@@ -49,9 +51,19 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
         name = UserControl.loginUserBean!!.name
     }
 
+    var isAddClass = false
+
     var studentBean = StudentBean().apply {
         name = UserControl.loginUserBean!!.name
     }
+
+    //所有班级课程
+    var allStudentList = mutableListOf<StudentBean>()
+
+    //所有班级列表
+    var allClassList = mutableListOf<String>()
+    /*选择的班级*/
+    var selectorClassName = ""
 
     private val name: String
         get() {
@@ -59,7 +71,11 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
         }
     private val titleName: String
         get() {
-            return if (isTeacher) "添加老师课表" else "添加学生课表"
+            return when (UserControl.loginUserBean!!.type) {
+                2 -> "添加老师课表"
+                3 -> "添加班级课表"
+                else -> "查看班级课表"
+            }
         }
 
     private val titleNameTip: String
@@ -153,8 +169,12 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
     }
 
     protected open fun saveStudent() {
+        if (TextUtils.isEmpty(selectorClassName)) {
+            Tip.tip("请选择班级")
+            return
+        }
         UILoading.progress(mParentILayout).setLoadingTipText("保存中...")
-        RBmob.update(StudentBean::class.java, studentBean, "name:${studentBean.name}") {
+        RBmob.update(StudentBean::class.java, studentBean, "name:$selectorClassName") {
             if (it.isEmpty()) {
                 Tip.tip("保存失败")
             } else {
@@ -165,16 +185,54 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
         }
     }
 
+    override fun onBindCommonView(holder: RBaseViewHolder, position: Int, bean: TeacherBean?) {
+        super.onBindCommonView(holder, position, bean)
+        if (position == 0 && isAddClass) {
+            if (TextUtils.isEmpty(selectorClassName)) {
+                holder.tv(R.id.text_view).text = "选择班级"
+            } else {
+                holder.tv(R.id.text_view).text = selectorClassName
+            }
+
+            holder.clickItem {
+                if (!checkEmptyClass()) {
+                    startIView(UIItemSelectorDialog(allClassList).apply {
+                        onItemSelector = { _, bean ->
+                            selectorClassName = bean
+
+                            val studentOfClass = getStudentOfClass(selectorClassName)
+                            if (studentOfClass == null) {
+                                studentBean = StudentBean().apply {
+                                    name = selectorClassName
+                                }
+                            } else {
+                                studentBean = studentOfClass
+                            }
+                            mExBaseAdapter.notifyDataSetChanged()
+                        }
+                    })
+                }
+            }
+        }
+    }
+
     override fun onBindClassView(holder: RBaseViewHolder, position: Int, bean: TeacherBean?) {
         super.onBindClassView(holder, position, bean)
         if (isTeacher) {
             initTeacher(holder, position)
         } else {
-            initStudent(holder, position)
+            if (UserControl.isStudent()) {
+            } else {
+                initStudent(holder, position)
+            }
         }
     }
 
     private fun initStudent(holder: RBaseViewHolder, position: Int) {
+        if (checkEmptyClass() || TextUtils.isEmpty(selectorClassName)) {
+            return
+        }
+
         val rowIndex = position / 6 - 1//横向第几行
 
         fun setBg(list: List<String>) {
@@ -387,6 +445,8 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
 
     override fun onUILoadData(page: Int) {
         super.onUILoadData(page)
+
+        //查看所有课
         RBmob.query<LessonBean>().apply {
             add(findObjects(object : FindListener<LessonBean>() {
                 override fun done(p0: MutableList<LessonBean>?, p1: BmobException?) {
@@ -409,18 +469,62 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
                 }
             })
         } else {
-            RBmob.query<StudentBean>(StudentBean::class.java, "name:${studentBean.name}") {
-                if (!RUtils.isListEmpty(it)) {
-                    studentBean = it.first()
+            if (UserControl.isStudent()) {
+                RBmob.query<StudentBean>(StudentBean::class.java, "name:${UserControl.loginUserBean!!.className}") {
+                    if (!RUtils.isListEmpty(it)) {
+                        studentBean = it.first()
+                    }
+                    onShowContentData()
                 }
-                onShowContentData()
+            } else {
+                //先查询所有班级对应的课程
+                RBmob.query<StudentBean>(StudentBean::class.java, "") {
+                    allStudentList.addAll(it)
+
+                    //在查询所有班级
+                    RBmob.query<UserBean>(UserBean::class.java, "") {
+                        for (bean in it) {
+                            if (!TextUtils.isEmpty(bean.className) && !allClassList.contains(bean.className)) {
+                                allClassList.add(bean.className)
+                            }
+                        }
+                        checkEmptyClass()
+                        onShowContentData()
+                    }
+                }
             }
+        }
+    }
+
+    private fun checkEmptyClass(): Boolean {
+        if (RUtils.isListEmpty(allClassList)) {
+            Tip.tip("暂无班级可编辑")
+            return true
+        } else {
+            return false
         }
     }
 
     protected open fun onShowContentData() {
         showContentLayout()
+    }
+
+    private fun getStudentOfClass(className: String): StudentBean? {
+        var result: StudentBean? = null
+        for (bean in allStudentList) {
+            if (TextUtils.equals(bean.name, className)) {
+                result = bean
+                break
+            }
+        }
+        return result
+    }
+
+    override fun showContentLayout() {
+        super.showContentLayout()
         resetUI()
-        uiTitleBarContainer.showRightItem(0)
+        if (!UserControl.isStudent()) {
+            uiTitleBarContainer.showRightItem(0)
+        }
     }
 }

@@ -1,9 +1,11 @@
 package com.cls.manager.iview
 
 import android.content.pm.ActivityInfo
+import android.graphics.Color
 import android.view.LayoutInflater
 import com.angcyo.uiview.container.ContentLayout
 import com.angcyo.uiview.kotlin.clickIt
+import com.angcyo.uiview.model.TitleBarPattern
 import com.cls.manager.R
 import com.cls.manager.base.BaseContentUIView
 import com.cls.manager.control.UserControl
@@ -22,16 +24,19 @@ import com.orhanobut.hawk.Hawk
  */
 class MainUIView : BaseContentUIView() {
 
-//    override fun getTitleBar(): TitleBarPattern {
-//        return super.getTitleBar()
-//                .setTitleBarBGColor(Color.RED)
+    override fun getTitleBar(): TitleBarPattern {
+        return super.getTitleBar()
+                .setShowBackImageView(false)
+                .setFloating(true)
+                .setTitleBarBGColor(Color.TRANSPARENT)
+                .setTitleString(when (UserControl.loginUserBean!!.type) {
+                    3 -> "管理员 ${UserControl.loginUserBean!!.name}"
+                    4 -> "超级管理员 ${UserControl.loginUserBean!!.name}"
+                    else -> "${UserControl.loginUserBean!!.className} ${UserControl.loginUserBean!!.name}"
+                })
 //                .addRightItem(TitleBarPattern.TitleBarItem("+") {
 //                    startIView(MainUIView())
 //                })
-//    }
-
-    override fun isHaveTitleBar(): Boolean {
-        return false
     }
 
     override fun getDefaultRequestedOrientation(): Int {
@@ -48,14 +53,10 @@ class MainUIView : BaseContentUIView() {
             when (it.type) {
                 1 -> {
                     //学生
-                    mViewHolder.tv(R.id.add_teacher).text = "添加课表"
+                    mViewHolder.gone(R.id.add_lesson)
+                    mViewHolder.tv(R.id.add_teacher).text = "查看课程表"
                     click(R.id.add_teacher) {
                         startIView(AddTeacherUIView(false))
-                    }
-
-                    //添加课程
-                    mViewHolder.visible(R.id.add_lesson).clickIt {
-                        startIView(AddLessonUIView())
                     }
                 }
                 2 -> {
@@ -70,14 +71,22 @@ class MainUIView : BaseContentUIView() {
                         startIView(RequestClassUIView())
                     }
                 }
-                3 -> {
-                    //管理
-                    mViewHolder.gone(R.id.add_teacher)
-                }
-                4 -> {
-                    //超级
-                    mViewHolder.gone(R.id.add_teacher)
+                3, 4 -> {
+                    //管理, 超级管理
+                    mViewHolder.tv(R.id.verify_class).text = "审核课室"
+                    mViewHolder.visible(R.id.verify_class).clickIt {
+                        startIView(VerifyClassUIView())
+                    }
 
+                    mViewHolder.tv(R.id.add_teacher).text = "添加班级课程表"
+                    click(R.id.add_teacher) {
+                        startIView(AddTeacherUIView(false).apply { isAddClass = true })
+                    }
+
+                    //添加课程
+                    mViewHolder.visible(R.id.add_lesson).clickIt {
+                        startIView(AddLessonUIView())
+                    }
                 }
             }
         }

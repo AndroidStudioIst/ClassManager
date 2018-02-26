@@ -32,4 +32,16 @@ public class RequestClassBean extends BaseBmob {
     public void setSuccess(String success) {
         this.success = success;
     }
+
+    public void addSuccess(String value) {
+        request = request.replaceAll(value, "");
+        field = field.replaceAll(value, "");
+        success = success + "," + value;
+    }
+
+    public void addRequest(String value) {
+        field = field.replaceAll(value, "");
+        success = success.replaceAll(value, "");
+        request = request + "," + value;
+    }
 }

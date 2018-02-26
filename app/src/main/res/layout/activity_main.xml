@@ -22,7 +22,7 @@
             android:id="@+id/add_teacher"
             style="@style/MainItemTextStyle"
             android:text="添加课表"
-            app:r_drift_angle="30"
+            app:r_drift_angle="180"
             app:r_drift_r_offset="80dp"/>
 
         <com.angcyo.uiview.widget.RTextView
@@ -30,7 +30,7 @@
             style="@style/MainItemTextStyle"
             android:text="添加课程"
             android:visibility="gone"
-            app:r_drift_angle="90"
+            app:r_drift_angle="270"
             app:r_drift_r_offset="60dp"
             tools:visibility="visible"/>
 
@@ -39,28 +39,30 @@
             style="@style/MainItemTextStyle"
             android:text="申请实验课室"
             android:visibility="gone"
-            app:r_drift_angle="145"
-            app:r_drift_r_offset="100dp"
+            app:r_drift_angle="380"
+            app:r_drift_r_offset="80dp"
             tools:visibility="visible"/>
 
         <com.angcyo.uiview.widget.RTextView
+            android:id="@+id/verify_class"
             style="@style/MainItemTextStyle"
-            android:text="按钮4"
-            app:r_drift_angle="180"
+            android:text="课室审核"
+            android:visibility="gone"
+            app:r_drift_angle="0"
             app:r_drift_angle_step="0.05"
             app:r_drift_r_offset="80dp"/>
 
-        <com.angcyo.uiview.widget.RTextView
-            style="@style/MainItemTextStyle"
-            android:text="按钮5"
-            app:r_drift_angle="270"
-            app:r_drift_r_offset="40dp"/>
+        <!--<com.angcyo.uiview.widget.RTextView-->
+        <!--style="@style/MainItemTextStyle"-->
+        <!--android:text="按钮5"-->
+        <!--app:r_drift_angle="270"-->
+        <!--app:r_drift_r_offset="40dp"/>-->
 
         <com.angcyo.uiview.widget.RTextView
             android:id="@+id/quit_button"
             style="@style/MainItemTextStyle"
             android:text="注销"
-            app:r_drift_angle="350"
+            app:r_drift_angle="90"
             app:r_drift_r_offset="80dp"/>
 
     </com.angcyo.uiview.viewgroup.DriftLayout>

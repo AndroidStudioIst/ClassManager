@@ -38,18 +38,30 @@ class RegisterUIView : BaseItemUIView() {
         return super.getTitleBar().setTitleGravity(Gravity.LEFT).setTitleString("欢迎注册")
     }
 
+    override fun haveSoftInput(): Boolean {
+        return true
+    }
+
     override fun createItems(items: MutableList<SingleItem>) {
         items.add(object : SingleItem() {
             override fun onBindView(holder: RBaseViewHolder, posInData: Int, dataBean: Item?) {
                 val name: ExEditText = holder.v(R.id.name_view)
                 val pw: ExEditText = holder.v(R.id.pw_view)
                 val pw2: ExEditText = holder.v(R.id.pw_view2)
+                val cls: ExEditText = holder.v(R.id.class_view)
 
                 holder.click(R.id.user_type) {
                     startIView(UIItemSelectorDialog(listOf("学生", "教师")).apply {
                         onItemSelector = { position, bean ->
                             userBean.type = position + 1
                             holder.tv(R.id.user_type).text = bean
+
+                            if (position == 0) {
+                                holder.visible(R.id.class_layout)
+                            } else {
+                                cls.setText("")
+                                holder.gone(R.id.class_layout)
+                            }
                         }
                     })
                 }
@@ -58,6 +70,13 @@ class RegisterUIView : BaseItemUIView() {
                     if (name.checkEmpty() || pw.checkEmpty() || pw2.checkEmpty()) {
                         T_.error("请检查输入")
                     } else {
+                        if (userBean.type == 1) {
+                            if (cls.checkEmpty()) {
+                                T_.error("请输入班级名")
+                                return@click
+                            }
+                        }
+
                         if (TextUtils.equals(pw.string(), pw2.string())) {
                             UILoading.show2(mParentILayout).setLoadingTipText("正在注册")
 
@@ -69,6 +88,7 @@ class RegisterUIView : BaseItemUIView() {
                                     userBean.apply {
                                         this.name = name.string()
                                         this.pw = pw.string()
+                                        this.className = cls.string()
                                         add(saveObservable().subscribe(object : RLoadingSubscriber<String>(mParentILayout, "正在注册") {
 
                                             override fun onSucceed(bean: String?) {
