@@ -87,7 +87,9 @@ class MainUIView : BaseContentUIView() {
 
                     mViewHolder.tv(R.id.add_teacher).text = "添加班级课程表"
                     click(R.id.add_teacher) {
-                        startIView(AddTeacherUIView(false).apply { isAddClass = true })
+                        val teacherUIView = AddTeacherUIView(false)
+                        teacherUIView.isAddClass = true
+                        startIView(teacherUIView)
                     }
 
                     //添加课程
