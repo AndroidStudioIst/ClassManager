@@ -31,6 +31,8 @@ public class TeacherBean extends BmobObject {
     private transient List<RequestClassBean> requestList;
     //选中了那个老师
     private transient RequestClassBean selectorRequest;
+    //是否是第一次赋值
+    private transient boolean isFirst = true;
 
     public String getName() {
         return name;
@@ -94,6 +96,14 @@ public class TeacherBean extends BmobObject {
 
     public void setSelectorRequest(RequestClassBean selectorRequest) {
         this.selectorRequest = selectorRequest;
+    }
+
+    public boolean isFirst() {
+        return isFirst;
+    }
+
+    public void setFirst(boolean first) {
+        isFirst = first;
     }
 
     @Override

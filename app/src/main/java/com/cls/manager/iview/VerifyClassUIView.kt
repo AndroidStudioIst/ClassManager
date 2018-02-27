@@ -154,34 +154,58 @@ class VerifyClassUIView : RequestClassUIView() {
         if (count == 0) {
             holder.itemView.setBackgroundColor(Color.TRANSPARENT)
             holder.tv(R.id.text_view).text = ""
-        } else if (count == 1) {
-            holder.itemView.setBackgroundColor(getColor(R.color.base_chat_bg_color))
-            holder.tv(R.id.text_view).text = rBeanList[0].name
-
-            teacherBean.selectorRequest = rBeanList[0]
-
-            teacherBean.selectorRequest.addSuccess("$row:$column")
         } else {
-            holder.itemView.setBackgroundColor(getColor(R.color.base_text_color_dark))
+            if (count == 1) {
+                holder.itemView.setBackgroundColor(getColor(R.color.base_chat_bg_color))
+                if (teacherBean.isFirst) {
+                    teacherBean.selectorRequest = rBeanList[0]
+                    teacherBean.selectorRequest.addSuccess("$row:$column")
+                }
 
-            if (teacherBean.selectorRequest == null) {
-                holder.tv(R.id.text_view).text = "${count}个"
+                if (teacherBean.selectorRequest == null) {
+                    holder.tv(R.id.text_view).text = "未定"
+                } else {
+                    holder.tv(R.id.text_view).text = teacherBean.selectorRequest.name
+                }
             } else {
-                holder.tv(R.id.text_view).text = teacherBean.selectorRequest.name
+                holder.itemView.setBackgroundColor(getColor(R.color.base_text_color_dark))
+
+                if (teacherBean.selectorRequest == null) {
+                    if (teacherBean.isFirst) {
+                        holder.tv(R.id.text_view).text = "${count}个"
+                    } else {
+                        holder.tv(R.id.text_view).text = "未定"
+                    }
+                } else {
+                    holder.tv(R.id.text_view).text = teacherBean.selectorRequest.name
+                }
             }
 
+
             holder.clickItem {
-                startIView(UIItemSelectorDialog(teacherBean.requestList).apply {
+                val datas = mutableListOf<RequestClassBean>()
+                datas.addAll(teacherBean.requestList)
+                datas.add(RequestClassBean().apply {
+                    name = "未定"
+                })
+                startIView(UIItemSelectorDialog(datas).apply {
                     onInitItemLayout = { holder, _, dataBean ->
                         holder.tv(R.id.base_text_view).text = dataBean.name
                     }
-                    onItemSelector = { _, bean ->
-                        for (request in teacherBean.requestList) {
-                            if (request == bean) {
-                                teacherBean.selectorRequest = request
-                                teacherBean.selectorRequest.addSuccess("$row:$column")
-                            } else {
+                    onItemSelector = { pos, bean ->
+                        if (pos == datas.size - 1) {
+                            for (request in teacherBean.requestList) {
+                                teacherBean.selectorRequest = null
                                 request.addRequest("$row:$column")
+                            }
+                        } else {
+                            for (request in teacherBean.requestList) {
+                                if (request == bean) {
+                                    teacherBean.selectorRequest = request
+                                    teacherBean.selectorRequest.addSuccess("$row:$column")
+                                } else {
+                                    request.addRequest("$row:$column")
+                                }
                             }
                         }
                         mExBaseAdapter.notifyItemChanged(position)
@@ -189,5 +213,6 @@ class VerifyClassUIView : RequestClassUIView() {
                 })
             }
         }
+        teacherBean.isFirst = false
     }
 }
