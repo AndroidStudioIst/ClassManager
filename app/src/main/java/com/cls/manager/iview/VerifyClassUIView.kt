@@ -7,7 +7,6 @@ import com.angcyo.bmob.RBmob
 import com.angcyo.uiview.dialog.UIItemSelectorDialog
 import com.angcyo.uiview.dialog.UILoading
 import com.angcyo.uiview.model.TitleBarPattern
-import com.angcyo.uiview.net.P
 import com.angcyo.uiview.net.RException
 import com.angcyo.uiview.net.RSubscriber
 import com.angcyo.uiview.net.Rx
@@ -74,11 +73,7 @@ class VerifyClassUIView : RequestClassUIView() {
                         .flatMap({ requestBean ->
                             val query = BmobQuery<TeacherBean>()
                             query.setLimit(500)//最大返回500条, 请查看文档的分页查询
-                            P.foreach(object : P.OnValue() {
-                                override fun onValue(key: String, value: String) {
-                                    query.addWhereEqualTo(key, value)
-                                }
-                            }, "name:${requestBean.name}")
+                            query.addWhereEqualTo("name", requestBean.name)
                             query.findObjectsObservable(TeacherBean::class.java)
                                     .observeOn(Schedulers.io())
                                     .map {
