@@ -2,16 +2,23 @@ package com.cls.manager.iview
 
 import android.graphics.Color
 import android.widget.TextView
+import cn.bmob.v3.BmobQuery
 import com.angcyo.bmob.RBmob
 import com.angcyo.uiview.dialog.UIItemSelectorDialog
 import com.angcyo.uiview.dialog.UILoading
 import com.angcyo.uiview.model.TitleBarPattern
+import com.angcyo.uiview.net.P
+import com.angcyo.uiview.net.RException
+import com.angcyo.uiview.net.RSubscriber
+import com.angcyo.uiview.net.Rx
 import com.angcyo.uiview.recycler.RBaseViewHolder
 import com.angcyo.uiview.utils.RUtils
 import com.angcyo.uiview.utils.T_
 import com.cls.manager.R
 import com.cls.manager.bean.RequestClassBean
 import com.cls.manager.bean.TeacherBean
+import rx.schedulers.Schedulers
+import java.util.*
 
 /**
  * Copyright (C) 2016,深圳市红鸟网络科技股份有限公司 All rights reserved.
@@ -46,15 +53,80 @@ class VerifyClassUIView : RequestClassUIView() {
         }
 
         RBmob.query<RequestClassBean>(RequestClassBean::class.java, "") {
-            if (!RUtils.isListEmpty(it)) {
-                requestClassList.addAll(it)
+
+            fun onEnd() {
+                if (requestClassList.isEmpty()) {
+                    T_.error("暂无老师申请课室")
+                    uiTitleBarContainer.hideRightItem(0)
+                } else {
+                    uiTitleBarContainer.getRightView<TextView>(0).text = "批准"
+                }
             }
-            showContentLayout()
-            if (requestClassList.isEmpty()) {
-                T_.error("暂无老师申请课室")
-                uiTitleBarContainer.hideRightItem(0)
+
+            if (RUtils.isListEmpty(it)) {
+                showContentLayout()
+                onEnd()
             } else {
-                uiTitleBarContainer.getRightView<TextView>(0).text = "批准"
+                requestClassList.addAll(it)
+                //requestClassList
+                Rx.from(requestClassList)
+                        .observeOn(Schedulers.io())
+                        .flatMap({ requestBean ->
+                            val query = BmobQuery<TeacherBean>()
+                            query.setLimit(500)//最大返回500条, 请查看文档的分页查询
+                            P.foreach(object : P.OnValue() {
+                                override fun onValue(key: String, value: String) {
+                                    query.addWhereEqualTo(key, value)
+                                }
+                            }, "name:${requestBean.name}")
+                            query.findObjectsObservable(TeacherBean::class.java)
+                                    .observeOn(Schedulers.io())
+                                    .map {
+                                        if (RUtils.isListEmpty(it)) {
+                                            "${requestBean.name}:${it.size}:fail"
+                                        } else {
+                                            requestBean.mTeacherBean = it.first().apply {
+                                                allNum = calcAllNum()
+                                            }
+                                            "${requestBean.mTeacherBean.name}:${it.size}:ok"
+                                        }
+                                    }
+                        })
+                        .compose(Rx.transformer())
+                        .subscribe(object : RSubscriber<String>() {
+                            override fun onStart() {
+                                super.onStart()
+                                UILoading.flow(mParentILayout).setLoadingTipText("正在计算中...")
+                            }
+
+                            override fun onCompleted() {
+                                requestClassList.sortWith(Comparator { class1, class2 ->
+                                    //老师不能存在, 或者 课程比较多的, 放后面, 自然序, 从大到小
+                                    var result = if (class1.mTeacherBean == null && class2.mTeacherBean == null) {
+                                        0
+                                    } else if (class1.mTeacherBean == null) {
+                                        1
+                                    } else if (class2.mTeacherBean == null) {
+                                        -1
+                                    } else if (class1.mTeacherBean.allNum == class2.mTeacherBean.allNum) {
+                                        0
+                                    } else if (class1.mTeacherBean.allNum > class2.mTeacherBean.allNum) {
+                                        1
+                                    } else {
+                                        -1
+                                    }
+                                    result
+                                })
+                                super.onCompleted()
+                            }
+
+                            override fun onEnd(isError: Boolean, isNoNetwork: Boolean, e: RException?) {
+                                super.onEnd(isError, isNoNetwork, e)
+                                UILoading.hide()
+                                showContentLayout()
+                                onEnd()
+                            }
+                        })
             }
         }
     }
@@ -181,16 +253,28 @@ class VerifyClassUIView : RequestClassUIView() {
                 }
             }
 
-
             holder.clickItem {
                 val datas = mutableListOf<RequestClassBean>()
                 datas.addAll(teacherBean.requestList)
                 datas.add(RequestClassBean().apply {
-                    name = "未定"
+                    name = "(不指定)"
                 })
                 startIView(UIItemSelectorDialog(datas).apply {
-                    onInitItemLayout = { holder, _, dataBean ->
-                        holder.tv(R.id.base_text_view).text = dataBean.name
+                    itemLayoutId = R.layout.item_text3_layout
+                    onInitItemLayout = { holder, pos, dataBean ->
+                        if (dataBean.mTeacherBean == null) {
+                            holder.tv(R.id.base_text_view).text = dataBean.name
+                            if (pos == datas.size - 1) {
+                                holder.tv(R.id.base_text_view2).text = ""
+                            } else {
+                                holder.tv(R.id.base_text_view2).text = "老师已被删"
+                            }
+                            holder.tv(R.id.base_text_view3).text = ""
+                        } else {
+                            holder.tv(R.id.base_text_view).text = dataBean.name
+                            holder.tv(R.id.base_text_view2).text = "已有课时:${dataBean.mTeacherBean.allNum}节"
+                            holder.tv(R.id.base_text_view3).text = "空余:${50 - dataBean.mTeacherBean.allNum}节"
+                        }
                     }
                     onItemSelector = { pos, bean ->
                         if (pos == datas.size - 1) {

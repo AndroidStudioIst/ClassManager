@@ -24,7 +24,6 @@ public class StudentBean extends BaseBmob {
     private String w4 = ",,,,,,,,,";
     private String w5 = ",,,,,,,,,";
 
-
     public ArrayList<String> w1List() {
         return RUtils.split(w1, ",", true);
     }

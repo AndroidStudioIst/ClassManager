@@ -55,7 +55,7 @@ class LoginUIView : BaseItemUIView() {
                     if (name.checkEmpty() || pw.checkEmpty()) {
                         T_.error("请检查输入")
                     } else {
-                        UILoading.show2(mParentILayout).setLoadingTipText("正在登录")
+                        UILoading.flow(mParentILayout).setLoadingTipText("正在登录")
                         UserControl.loginUser(name.string(), pw.string()) {
                             UILoading.hide()
                             if (it == null) {

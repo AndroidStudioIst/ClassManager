@@ -9,6 +9,9 @@ public class RequestClassBean extends BaseBmob {
     private String success = "";//申请成功的教室
     private String field = "";//申请失败
 
+    //正在申请课室的老师信息
+    public transient TeacherBean mTeacherBean;
+
     public String getField() {
         return field;
     }

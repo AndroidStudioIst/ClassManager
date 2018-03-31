@@ -2,6 +2,8 @@ package com.cls.manager.bean;
 
 import android.text.TextUtils;
 
+import com.angcyo.uiview.kotlin.ExKt;
+
 import java.util.List;
 
 import cn.bmob.v3.BmobObject;
@@ -33,6 +35,7 @@ public class TeacherBean extends BmobObject {
     private transient RequestClassBean selectorRequest;
     //是否是第一次赋值
     private transient boolean isFirst = true;
+    public transient int allNum = 0;
 
     public String getName() {
         return name;
@@ -104,6 +107,44 @@ public class TeacherBean extends BmobObject {
 
     public void setFirst(boolean first) {
         isFirst = first;
+    }
+
+    private int getNum(int w) {
+        int count = 0;
+        for (int i = 1; i <= 10; i++) {
+            if (ExKt.have(w, 0b1 << i)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    //老师周一有多少节课
+    public int w1Num() {
+        return getNum(w1);
+    }
+
+    public int w2Num() {
+        return getNum(w2);
+    }
+
+    public int w3Num() {
+        return getNum(w3);
+    }
+
+    public int w4Num() {
+        return getNum(w4);
+    }
+
+    public int w5Num() {
+        return getNum(w5);
+    }
+
+    /**
+     * 老师总课数
+     */
+    public int calcAllNum() {
+        return w1Num() + w2Num() + w3Num() + w4Num() + w5Num();
     }
 
     @Override
