@@ -268,7 +268,11 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
                     }
                     startIView(UIItemSelectorDialog(lessonBeanList).apply {
                         onInitItemLayout = { holder, _, dataBean ->
-                            holder.tv(R.id.base_text_view).text = dataBean.name
+                            if (dataBean.name.isNullOrEmpty()) {
+                                holder.tv(R.id.base_text_view).text = "(不指定)"
+                            } else {
+                                holder.tv(R.id.base_text_view).text = dataBean.name
+                            }
                         }
                         onItemSelector = { _, bean ->
                             studentBean.w1 = RUtils.connect(wList.apply {
@@ -288,7 +292,11 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
                     }
                     startIView(UIItemSelectorDialog(lessonBeanList).apply {
                         onInitItemLayout = { holder, _, dataBean ->
-                            holder.tv(R.id.base_text_view).text = dataBean.name
+                            if (dataBean.name.isNullOrEmpty()) {
+                                holder.tv(R.id.base_text_view).text = "(不指定)"
+                            } else {
+                                holder.tv(R.id.base_text_view).text = dataBean.name
+                            }
                         }
                         onItemSelector = { _, bean ->
                             studentBean.w2 = RUtils.connect(wList.apply {
@@ -308,7 +316,11 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
                     }
                     startIView(UIItemSelectorDialog(lessonBeanList).apply {
                         onInitItemLayout = { holder, _, dataBean ->
-                            holder.tv(R.id.base_text_view).text = dataBean.name
+                            if (dataBean.name.isNullOrEmpty()) {
+                                holder.tv(R.id.base_text_view).text = "(不指定)"
+                            } else {
+                                holder.tv(R.id.base_text_view).text = dataBean.name
+                            }
                         }
                         onItemSelector = { _, bean ->
                             studentBean.w3 = RUtils.connect(wList.apply {
@@ -328,7 +340,11 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
                     }
                     startIView(UIItemSelectorDialog(lessonBeanList).apply {
                         onInitItemLayout = { holder, _, dataBean ->
-                            holder.tv(R.id.base_text_view).text = dataBean.name
+                            if (dataBean.name.isNullOrEmpty()) {
+                                holder.tv(R.id.base_text_view).text = "(不指定)"
+                            } else {
+                                holder.tv(R.id.base_text_view).text = dataBean.name
+                            }
                         }
                         onItemSelector = { _, bean ->
                             studentBean.w4 = RUtils.connect(wList.apply {
@@ -348,7 +364,11 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
                     }
                     startIView(UIItemSelectorDialog(lessonBeanList).apply {
                         onInitItemLayout = { holder, _, dataBean ->
-                            holder.tv(R.id.base_text_view).text = dataBean.name
+                            if (dataBean.name.isNullOrEmpty()) {
+                                holder.tv(R.id.base_text_view).text = "(不指定)"
+                            } else {
+                                holder.tv(R.id.base_text_view).text = dataBean.name
+                            }
                         }
                         onItemSelector = { _, bean ->
                             studentBean.w5 = RUtils.connect(wList.apply {
@@ -479,6 +499,10 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
                 override fun done(p0: MutableList<LessonBean>?, p1: BmobException?) {
                     p0?.let {
                         lessonBeanList.addAll(it)
+
+                        if (isAddClass) {
+                            lessonBeanList.add(LessonBean())
+                        }
                     }
                 }
             }))
