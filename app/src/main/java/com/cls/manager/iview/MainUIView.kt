@@ -64,7 +64,9 @@ class MainUIView : BaseContentUIView() {
                     mViewHolder.gone(R.id.add_lesson)
                     mViewHolder.tv(R.id.add_teacher).text = "查看课程表"
                     click(R.id.add_teacher) {
-                        startIView(AddTeacherUIView(false))
+                        startIView(AddTeacherUIView(false).apply {
+                            isSeeClass = true
+                        })
                     }
                 }
                 2 -> {

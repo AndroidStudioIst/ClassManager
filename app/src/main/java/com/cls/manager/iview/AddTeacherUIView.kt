@@ -230,6 +230,7 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
             }
         } else {
             if (UserControl.isStudent()) {
+                initStudent(holder, position)
             } else {
                 initStudent(holder, position)
             }
@@ -237,8 +238,11 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
     }
 
     private fun initStudent(holder: RBaseViewHolder, position: Int) {
-        if (checkEmptyClass() || TextUtils.isEmpty(selectorClassName)) {
-            return
+        if (isSeeClass) {
+        } else {
+            if (checkEmptyClass() || TextUtils.isEmpty(selectorClassName)) {
+                return
+            }
         }
 
         val rowIndex = position / 6 - 1//横向第几行
