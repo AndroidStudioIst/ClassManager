@@ -89,6 +89,11 @@ class MainUIView : BaseContentUIView() {
                     mViewHolder.visible(R.id.request_class).clickIt {
                         startIView(RequestClassUIView())
                     }
+
+                    //查看课室情况
+                    mViewHolder.visible(R.id.see_verify_class).clickIt {
+                        startIView(SeeVerifyClassUIView())
+                    }
                 }
                 3, 4 -> {
                     //管理, 超级管理
@@ -107,6 +112,11 @@ class MainUIView : BaseContentUIView() {
                     //添加课程
                     mViewHolder.visible(R.id.add_lesson).clickIt {
                         startIView(AddLessonUIView())
+                    }
+
+                    //查看课室情况
+                    mViewHolder.visible(R.id.see_verify_class).clickIt {
+                        startIView(SeeVerifyClassUIView())
                     }
                 }
             }

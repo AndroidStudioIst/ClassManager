@@ -30,10 +30,10 @@ import java.util.*
  * 修改备注：
  * Version: 1.0.0
  */
-class VerifyClassUIView : RequestClassUIView() {
+open class VerifyClassUIView : RequestClassUIView() {
 
     /*所有老师的请求*/
-    private var requestClassList = mutableListOf<RequestClassBean>()
+    protected var requestClassList = mutableListOf<RequestClassBean>()
 
 
     override fun getTitleBar(): TitleBarPattern {
@@ -56,6 +56,8 @@ class VerifyClassUIView : RequestClassUIView() {
             fun onEnd() {
                 if (requestClassList.isEmpty()) {
                     T_.error("暂无老师申请课室")
+                    uiTitleBarContainer.hideRightItem(0)
+                } else if (this.javaClass.simpleName.contains("SeeVerifyClassUIView")) {
                     uiTitleBarContainer.hideRightItem(0)
                 } else {
                     uiTitleBarContainer.getRightView<TextView>(0).text = "批准"
@@ -91,7 +93,9 @@ class VerifyClassUIView : RequestClassUIView() {
                         .subscribe(object : RSubscriber<String>() {
                             override fun onStart() {
                                 super.onStart()
-                                UILoading.flow(mParentILayout).setLoadingTipText("正在计算中...")
+                                if (!this@VerifyClassUIView.javaClass.simpleName.contains("SeeVerifyClassUIView")) {
+                                    UILoading.flow(mParentILayout).setLoadingTipText("正在计算中...")
+                                }
                             }
 
                             override fun onCompleted() {
@@ -276,14 +280,17 @@ class VerifyClassUIView : RequestClassUIView() {
                             for (request in teacherBean.requestList) {
                                 teacherBean.selectorRequest = null
                                 request.addRequest("$row:$column")
+                                request.isNeedNotify = false
                             }
                         } else {
                             for (request in teacherBean.requestList) {
                                 if (request == bean) {
                                     teacherBean.selectorRequest = request
                                     teacherBean.selectorRequest.addSuccess("$row:$column")
+                                    request.isNeedNotify = true
                                 } else {
                                     request.addRequest("$row:$column")
+                                    request.isNeedNotify = false
                                 }
                             }
                         }

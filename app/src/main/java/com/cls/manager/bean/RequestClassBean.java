@@ -8,6 +8,7 @@ public class RequestClassBean extends BaseBmob {
     private String request = "";//正在申请的教室
     private String success = "";//申请成功的教室
     private String field = "";//申请失败
+    private boolean needNotify = false; //审批成功后, 是否需要弹出通知
 
     //正在申请课室的老师信息
     public transient TeacherBean mTeacherBean;
@@ -46,5 +47,13 @@ public class RequestClassBean extends BaseBmob {
         field = field.replaceAll(value, "");
         success = success.replaceAll(value, "");
         request = request + "," + value;
+    }
+
+    public boolean isNeedNotify() {
+        return needNotify;
+    }
+
+    public void setNeedNotify(boolean needNotify) {
+        this.needNotify = needNotify;
     }
 }

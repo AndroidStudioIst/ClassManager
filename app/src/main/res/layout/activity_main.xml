@@ -52,17 +52,20 @@
             app:r_drift_angle_step="0.05"
             app:r_drift_r_offset="80dp"/>
 
-        <!--<com.angcyo.uiview.widget.RTextView-->
-        <!--style="@style/MainItemTextStyle"-->
-        <!--android:text="按钮5"-->
-        <!--app:r_drift_angle="270"-->
-        <!--app:r_drift_r_offset="40dp"/>-->
+        <com.angcyo.uiview.widget.RTextView
+            android:id="@+id/see_verify_class"
+            style="@style/MainItemTextStyle"
+            android:text="查看课室情况"
+            android:visibility="gone"
+            app:r_drift_angle="120"
+            app:r_drift_r_offset="60dp"
+            tools:visibility="visible"/>
 
         <com.angcyo.uiview.widget.RTextView
             android:id="@+id/quit_button"
             style="@style/MainItemTextStyle"
             android:text="注销"
-            app:r_drift_angle="90"
+            app:r_drift_angle="60"
             app:r_drift_r_offset="80dp"/>
 
     </com.angcyo.uiview.viewgroup.DriftLayout>

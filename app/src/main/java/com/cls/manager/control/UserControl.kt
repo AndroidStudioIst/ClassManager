@@ -64,6 +64,8 @@ object UserControl {
                     Hawk.put("NAME", name)
                     Hawk.put("PW", pw)
 
+                    NotifyControl.checkNotify()
+
                     result.invoke(loginUserBean)
                 } else {
                     result.invoke(null)
