@@ -34,12 +34,12 @@ open class RequestClassUIView : AddTeacherUIView(true) {
 
         //查询所有班级
         RBmob.query<StudentBean>(StudentBean::class.java, "") {
-            allStudentList.addAll(it)
+            allStudentList.addAll(it!!)
 
             //查询老师课室的请求
             RBmob.query<RequestClassBean>(RequestClassBean::class.java, "name:${requestClassBean.name}") {
                 if (!RUtils.isListEmpty(it)) {
-                    requestClassBean = it.first()
+                    requestClassBean = it!!.first()
                 }
                 showContentLayout()
                 uiTitleBarContainer.getRightView<TextView>(0).text = "申请"

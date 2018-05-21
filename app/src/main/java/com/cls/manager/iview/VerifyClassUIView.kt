@@ -1,6 +1,7 @@
 package com.cls.manager.iview
 
 import android.graphics.Color
+import android.text.TextUtils
 import android.widget.TextView
 import cn.bmob.v3.BmobQuery
 import com.angcyo.bmob.RBmob
@@ -68,7 +69,7 @@ open class VerifyClassUIView : RequestClassUIView() {
                 showContentLayout()
                 onEnd()
             } else {
-                requestClassList.addAll(it)
+                requestClassList.addAll(it!!)
                 //requestClassList
                 Rx.from(requestClassList)
                         .observeOn(Schedulers.io())
@@ -176,7 +177,7 @@ open class VerifyClassUIView : RequestClassUIView() {
 //            }
         }
         RBmob.update(list) {
-            if (it.isEmpty()) {
+            if (TextUtils.isEmpty(it)) {
                 T_.error("操作失败")
             } else {
                 T_.error("审批成功")

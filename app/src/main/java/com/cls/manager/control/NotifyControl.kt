@@ -21,7 +21,7 @@ object NotifyControl {
         RBmob.query<RequestClassBean>(RequestClassBean::class.java, "name:${UserControl.loginUserBean!!.name}") {
             if (!RUtils.isListEmpty(it)) {
 
-                it.firstOrNull()?.let {
+                it!!.firstOrNull()?.let {
 
                     if (it.isNeedNotify) {
                         debug()

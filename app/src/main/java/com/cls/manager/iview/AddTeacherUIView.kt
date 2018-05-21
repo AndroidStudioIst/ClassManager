@@ -520,11 +520,11 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
                     if (isSeeClass) {
                         //先查询所有班级对应的课程
                         RBmob.query<StudentBean>(StudentBean::class.java, "") {
-                            allStudentList.addAll(it)
+                            allStudentList.addAll(it!!)
 
                             //在查询所有班级
                             RBmob.query<UserBean>(UserBean::class.java, "") {
-                                for (bean in it) {
+                                for (bean in it!!) {
                                     if (!TextUtils.isEmpty(bean.className) && !allClassList.contains(bean.className)) {
                                         allClassList.add(bean.className)
                                     }
@@ -541,18 +541,18 @@ open class AddTeacherUIView(val isTeacher: Boolean = true) : BaseClassUIView<Tea
             if (UserControl.isStudent()) {
                 RBmob.query<StudentBean>(StudentBean::class.java, "name:${UserControl.loginUserBean!!.className}") {
                     if (!RUtils.isListEmpty(it)) {
-                        studentBean = it.first()
+                        studentBean = it!!.first()
                     }
                     onShowContentData()
                 }
             } else {
                 //先查询所有班级对应的课程
                 RBmob.query<StudentBean>(StudentBean::class.java, "") {
-                    allStudentList.addAll(it)
+                    allStudentList.addAll(it!!)
 
                     //在查询所有班级
                     RBmob.query<UserBean>(UserBean::class.java, "") {
-                        for (bean in it) {
+                        for (bean in it!!) {
                             if (!TextUtils.isEmpty(bean.className) && !allClassList.contains(bean.className)) {
                                 allClassList.add(bean.className)
                             }
