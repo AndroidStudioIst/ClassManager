@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.text.TextUtils
 import android.widget.TextView
 import com.angcyo.bmob.RBmob
+import com.angcyo.uiview.dialog.UIInputExDialog
 import com.angcyo.uiview.dialog.UIItemSelectorDialog
 import com.angcyo.uiview.dialog.UILoading
 import com.angcyo.uiview.kotlin.have
@@ -114,6 +115,35 @@ open class RequestClassUIView : AddTeacherUIView(true) {
             } else if (requestClassBean.request.contains("$row:$column")) {
                 holder.itemView.setBackgroundColor(getColor(R.color.base_chat_bg_color))
                 holder.tv(R.id.text_view).text = "申请中"
+
+                holder.clickItem {
+                    //L.e("call: setTeacherItem -> row:$row  column:$column")
+                    val remarkList = when (column) {
+                        1 -> requestClassBean.w1RemarkList()
+                        2 -> requestClassBean.w2RemarkList()
+                        3 -> requestClassBean.w3RemarkList()
+                        4 -> requestClassBean.w4RemarkList()
+                        else -> requestClassBean.w5RemarkList()
+                    }
+                    val remark = remarkList[row - 1]
+
+                    //输入备注
+                    startIView(UIInputExDialog().apply {
+                        inputHintString = "请输入备注"
+                        inputDefaultString = remark
+
+                        onInputTextResult = {
+                            remarkList[row - 1] = it
+                            when (column) {
+                                1 -> requestClassBean.w1Remark = RUtils.connect(remarkList)
+                                2 -> requestClassBean.w2Remark = RUtils.connect(remarkList)
+                                3 -> requestClassBean.w3Remark = RUtils.connect(remarkList)
+                                4 -> requestClassBean.w4Remark = RUtils.connect(remarkList)
+                                else -> requestClassBean.w5Remark = RUtils.connect(remarkList)
+                            }
+                        }
+                    })
+                }
             } else {
                 if (requestClassBean.field.contains("$row:$column")) {
                     holder.tv(R.id.text_view).setTextColor(Color.WHITE)

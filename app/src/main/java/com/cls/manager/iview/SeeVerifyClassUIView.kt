@@ -1,5 +1,6 @@
 package com.cls.manager.iview
 
+import com.angcyo.uiview.dialog.UIBottomItemDialog
 import com.angcyo.uiview.model.TitleBarPattern
 import com.angcyo.uiview.recycler.RBaseViewHolder
 import com.angcyo.uiview.utils.RUtils
@@ -39,6 +40,26 @@ class SeeVerifyClassUIView : VerifyClassUIView() {
         }
 
         holder.clickItem { }
-        holder.tv(R.id.text_view).text = teacherBean.selectorRequest.name
+        holder.tv(R.id.text_view).text = teacherBean.selectorRequest?.name
+        teacherBean.selectorRequest?.let { bean ->
+            holder.clickItem {
+                val remarkList = when (column) {
+                    1 -> bean.w1RemarkList()
+                    2 -> bean.w2RemarkList()
+                    3 -> bean.w3RemarkList()
+                    4 -> bean.w4RemarkList()
+                    else -> bean.w5RemarkList()
+                }
+                val remark = remarkList[row - 1]
+                if (remark.isNotEmpty()) {
+                    UIBottomItemDialog.build()
+                            .addItem(remark) {
+
+                            }
+                            .setShowCancelButton(false)
+                            .showDialog(parentILayout)
+                }
+            }
+        }
     }
 }
